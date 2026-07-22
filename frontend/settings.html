@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FCC Settings</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- Font Awesome (Fixed Link Syntax) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    
+    <!-- IMMEDIATE DARK MODE INLINE SCRIPT -->
+    <script>
+        if (localStorage.getItem("darkMode") === "true") {
+            document.documentElement.classList.add("dark");
+        }
+    </script>
+</head>
+
+<body class="dashboard-page">
+
+    <div id="notification" class="notification">
+        Settings updated successfully!
+    </div>
+
+    <div class="portal">
+
+        <!-- ======================
+             SIDEBAR
+        ======================= -->
+        <aside class="sidebar">
+            <div class="brand">
+                <img src="logo.jpeg" alt="FCC Logo">
+                <h2>FCC Portal</h2>
+                <p>Forward for Christ Commission</p>
+            </div>
+
+            <nav>
+                <a href="dashboard.html">
+                    <i class="fa-solid fa-house"></i>
+                    Dashboard
+                </a>
+                <a href="profile.html">
+                    <i class="fa-solid fa-user"></i>
+                    My Profile
+                </a>
+                <a href="announcement.html">
+                    <i class="fa-solid fa-bullhorn"></i>
+                    Announcements
+                </a>
+                <a href="events.html">
+                    <i class="fa-solid fa-calendar-days"></i>
+                    Events
+                </a>
+                <a href="settings.html" class="active">
+                    <i class="fa-solid fa-gear"></i>
+                    Settings
+                </a>
+            </nav>
+
+            <button id="logoutBtn">
+                Logout
+            </button>
+        </aside>
+
+        <!-- ======================
+             MAIN CONTENT
+        ======================= -->
+        <main class="main-content">
+
+            <div class="page-title">
+                <h1>
+                    <i class="fa-solid fa-gear"></i>
+                    Settings
+                </h1>
+                <p>
+                    Manage your FCC account, appearance and security.
+                </p>
+            </div>
+
+            <div class="settings-grid">
+
+                <!-- ==========================
+                     CARD 1 : PROFILE SETTINGS
+                =========================== -->
+                <div class="settings-card">
+                    <div class="settings-header">
+                        <div class="icon blue">
+                            <i class="fa-solid fa-user-gear"></i>
+                        </div>
+                        <div>
+                            <h2>Identity & Ministry</h2>
+                            <p>Update your personal information.</p>
+                        </div>
+                    </div>
+
+                    <form id="profileSettingsForm">
+                        <div class="input-group">
+                            <label>First Name</label>
+                            <input type="text" id="settingsFirstName" placeholder="Enter first name" required>
+                        </div>
+
+                        <div class="input-group">
+                            <label>Last Name</label>
+                            <input type="text" id="settingsLastName" placeholder="Enter last name" required>
+                        </div>
+
+                        <div class="input-group">
+                            <label>Ministry Department</label>
+                            <select id="settingsMinistry">
+                                <option>General Member</option>
+                                <option>Praise & Worship Team</option>
+                                <option>Media & Sound</option>
+                                <option>Prayer Department</option>
+                                <option>Evangelism Team</option>
+                                <option>Medical Missionary</option>
+                                <option>Youth Ministry</option>
+                            </select>
+                        </div>
+
+                        <div class="input-group">
+                            <label>Preferred Bible Version</label>
+                            <select id="settingsBible">
+                                <option>King James Version (KJV)</option>
+                                <option>New King James Version (NKJV)</option>
+                                <option>English Standard Version (ESV)</option>
+                                <option>New International Version (NIV)</option>
+                            </select>
+                        </div>
+
+                        <button type="submit" class="primary-btn">
+                            <i class="fa-solid fa-floppy-disk"></i>
+                            Save Details
+                        </button>
+                    </form>
+                </div>
+
+                <!-- ======================================
+                     CARD 2 : NOTIFICATION SETTINGS
+                ======================================= -->
+                <div class="settings-card">
+                    <div class="settings-header">
+                        <div class="icon orange">
+                            <i class="fa-solid fa-bell"></i>
+                        </div>
+                        <div>
+                            <h2>Notifications</h2>
+                            <p>Control what notifications you receive from FCC.</p>
+                        </div>
+                    </div>
+
+                    <div class="notification-list">
+                        <!-- Announcement -->
+                        <div class="notification-item">
+                            <div>
+                                <h4>Urgent Announcements</h4>
+                                <small>Receive critical ministry and schedule updates.</small>
+                            </div>
+                            <label class="switch">
+                                <input type="checkbox" id="notifyAnnouncements" checked>
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+
+                        <!-- Events -->
+                        <div class="notification-item">
+                            <div>
+                                <h4>Event Reminders</h4>
+                                <small>Receive reminders 24 hours before church events.</small>
+                            </div>
+                            <label class="switch">
+                                <input type="checkbox" id="notifyEvents" checked>
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+
+                        <!-- Prayer -->
+                        <div class="notification-item">
+                            <div>
+                                <h4>Prayer Requests</h4>
+                                <small>Receive prayer request notifications from members.</small>
+                            </div>
+                            <label class="switch">
+                                <input type="checkbox" id="notifyPrayer">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+
+                        <!-- Bible Verse -->
+                        <div class="notification-item">
+                            <div>
+                                <h4>Daily Bible Verse</h4>
+                                <small>Receive a Bible verse every morning.</small>
+                            </div>
+                            <label class="switch">
+                                <input type="checkbox" id="notifyVerse" checked>
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+
+                        <!-- Fellowship -->
+                        <div class="notification-item">
+                            <div>
+                                <h4>Fellowship Updates</h4>
+                                <small>Stay informed about fellowship activities.</small>
+                            </div>
+                            <label class="switch">
+                                <input type="checkbox" id="notifyFellowship">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <button class="secondary-btn" id="saveNotificationsBtn">
+                        <i class="fa-solid fa-floppy-disk"></i>
+                        Save Notification Preferences
+                    </button>
+                </div>
+
+                <!-- ======================================
+                     CARD 3 : APPEARANCE
+                ======================================= -->
+                <div class="settings-card">
+                    <div class="settings-header">
+                        <div class="icon green">
+                            <i class="fa-solid fa-palette"></i>
+                        </div>
+                        <div>
+                            <h2>Appearance</h2>
+                            <p>Personalize how your FCC Portal looks.</p>
+                        </div>
+                    </div>
+
+                    <!-- Dark Mode -->
+                    <div class="notification-item">
+                        <div>
+                            <h4>Dark Mode</h4>
+                            <small>Switch between light and dark theme.</small>
+                        </div>
+                        <label class="switch">
+                            <input type="checkbox" id="darkMode">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                    <br>
+
+                    <!-- Font Size -->
+                    <div class="input-group">
+                        <label>
+                            <i class="fa-solid fa-font"></i>
+                            Font Size
+                        </label>
+                        <select id="fontSize">
+                            <option value="small">Small</option>
+                            <option value="medium" selected>Medium</option>
+                            <option value="large">Large</option>
+                        </select>
+                    </div>
+                    <br>
+
+                    <!-- Dashboard Theme -->
+                    <div class="input-group">
+                        <label>
+                            <i class="fa-solid fa-paintbrush"></i>
+                            Dashboard Theme
+                        </label>
+                        <select id="themeColor">
+                            <option value="blue">FCC Blue</option>
+                            <option value="gold">FCC Gold</option>
+                            <option value="green">Nature Green</option>
+                            <option value="purple">Royal Purple</option>
+                        </select>
+                    </div>
+                    <br>
+
+                    <!-- Background -->
+                    <div class="input-group">
+                        <label>
+                            <i class="fa-solid fa-image"></i>
+                            Dashboard Background
+                        </label>
+                        <select id="backgroundType">
+                            <option value="logo">FCC Logo</option>
+                            <option value="blur">Logo Blur</option>
+                            <option value="plain">Plain White</option>
+                            <option value="gradient">Blue Gradient</option>
+                        </select>
+                    </div>
+                    <br>
+
+                    <!-- Language -->
+                    <div class="input-group">
+                        <label>
+                            <i class="fa-solid fa-language"></i>
+                            Language
+                        </label>
+                        <select id="language">
+                            <option>English</option>
+                            <option>Chichewa</option>
+                        </select>
+                    </div>
+                    <br>
+
+                    <button class="primary-btn" id="saveAppearance">
+                        <i class="fa-solid fa-floppy-disk"></i>
+                        Save Appearance
+                    </button>
+                </div>
+
+                <!-- ======================================
+                     CARD 4 : SECURITY
+                ======================================= -->
+                <div class="settings-card">
+                    <div class="settings-header">
+                        <div class="icon red">
+                            <i class="fa-solid fa-shield-halved"></i>
+                        </div>
+                        <div>
+                            <h2>Account Security</h2>
+                            <p>Protect your FCC account with a secure password.</p>
+                        </div>
+                    </div>
+
+                    <form id="securityForm">
+                        <!-- Current Password -->
+                        <div class="input-group">
+                            <label>
+                                <i class="fa-solid fa-lock"></i>
+                                Current Password
+                            </label>
+                            <div class="password-box">
+                                <input type="password" id="currentPassword" placeholder="Current password" required>
+                                <i class="fa-solid fa-eye togglePassword"></i>
+                            </div>
+                        </div>
+                        <br>
+
+                        <!-- New Password -->
+                        <div class="input-group">
+                            <label>
+                                <i class="fa-solid fa-key"></i>
+                                New Password
+                            </label>
+                            <div class="password-box">
+                                <input type="password" id="newPassword" placeholder="Create new password" required>
+                                <i class="fa-solid fa-eye togglePassword"></i>
+                            </div>
+                        </div>
+                        <br>
+
+                        <!-- Password Strength -->
+                        <div class="password-strength">
+                            <div class="strength-bar">
+                                <div id="strengthLevel"></div>
+                            </div>
+                            <small id="strengthText">Password strength</small>
+                        </div>
+                        <br>
+
+                        <!-- Confirm -->
+                        <div class="input-group">
+                            <label>
+                                <i class="fa-solid fa-lock"></i>
+                                Confirm Password
+                            </label>
+                            <div class="password-box">
+                                <input type="password" id="confirmPassword" placeholder="Confirm new password" required>
+                                <i class="fa-solid fa-eye togglePassword"></i>
+                            </div>
+                        </div>
+                        <br>
+
+                        <!-- Match Indicator -->
+                        <p id="passwordMessage"></p>
+                        <br>
+
+                        <button class="primary-btn" type="submit">
+                            <i class="fa-solid fa-floppy-disk"></i>
+                            Update Password
+                        </button>
+                    </form>
+
+                    <hr>
+
+                    <div class="danger-zone">
+                        <h3>
+                            <i class="fa-solid fa-triangle-exclamation"></i>
+                            Danger Zone
+                        </h3>
+                        <p>Logging out removes your current session.</p>
+                        <button class="danger-btn" id="logoutEverywhere">
+                            <i class="fa-solid fa-right-from-bracket"></i>
+                            Logout from all devices
+                        </button>
+                    </div>
+                </div>
+
+            </div> <!-- END settings-grid -->
+        </main>
+    </div>
+
+    <script src="settings.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,1145 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
+<title>FCC Student Portal</title>
+
+
+<link rel="stylesheet" href="style.css">
+
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+rel="stylesheet">
+
+
+<link rel="stylesheet"
+href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+
+
+
+<script>
+
+if(localStorage.getItem("darkMode")==="true"){
+
+    document.documentElement.classList.add("dark");
+
+}
+
+</script>
+
+
+
+<script defer src="dashboard.js"></script>
+
+
+</head>
+
+
+
+<body class="dashboard-page">
+
+
+<div class="layout">
+
+
+
+<!-- ==========================
+SIDEBAR
+========================== -->
+
+
+<aside class="sidebar">
+
+
+<div class="sidebar-header">
+
+
+<img src="logo.jpeg"
+class="sidebar-logo"
+alt="FCC Logo">
+
+
+
+<h2>
+FCC Portal
+</h2>
+
+
+
+<p id="sidebarMemberNo">
+
+Forward for Christ Commission
+
+</p>
+
+
+
+</div>
+
+
+
+
+
+<nav class="sidebar-nav">
+
+
+
+<a href="dashboard.html"
+class="active">
+
+<i class="fa-solid fa-house"></i>
+
+<span>
+Dashboard
+</span>
+
+</a>
+
+
+
+
+<a href="profile.html">
+
+
+<i class="fa-solid fa-user"></i>
+
+
+<span>
+My Profile
+</span>
+
+
+</a>
+
+
+
+
+
+<a href="#announcements-section"
+id="announcementBtn">
+
+
+<i class="fa-solid fa-bullhorn"></i>
+
+
+<span>
+Announcements
+</span>
+
+
+</a>
+
+
+
+
+
+
+
+<a href="javascript:void(0)"
+id="sidebarEventsBtn">
+
+
+<i class="fa-solid fa-calendar-days"></i>
+
+
+<span>
+Events
+</span>
+
+
+</a>
+
+
+
+
+
+
+<a href="javascript:void(0)"
+id="sidebarBibleBtn">
+
+
+<i class="fa-solid fa-book-bible"></i>
+
+
+<span>
+Bible Study
+</span>
+
+
+</a>
+
+
+
+
+
+
+<a href="javascript:void(0)"
+id="sidebarPrayerBtn">
+
+
+<i class="fa-solid fa-hands-praying"></i>
+
+
+<span>
+Prayer Requests
+</span>
+
+
+</a>
+
+
+
+
+
+
+<a href="javascript:void(0)"
+id="sidebarMembersBtn">
+
+
+<i class="fa-solid fa-users"></i>
+
+
+<span>
+Members
+</span>
+
+
+</a>
+
+
+
+
+
+
+<a href="settings.html">
+
+
+<i class="fa-solid fa-gear"></i>
+
+
+<span>
+Settings
+</span>
+
+
+</a>
+
+
+
+
+</nav>
+
+
+
+
+
+
+
+<div class="mission-card-sidebar">
+
+
+<h3>
+Matthew 28:19
+</h3>
+
+
+<p>
+
+"Go therefore and make disciples of all nations..."
+
+</p>
+
+
+</div>
+
+
+
+
+</aside>
+
+
+
+
+
+
+
+<!-- ==========================
+MAIN CONTENT
+========================== -->
+
+
+<main class="main-content">
+
+
+
+<header class="topbar">
+
+
+<div class="topbar-left">
+
+
+<h1>
+Dashboard
+</h1>
+
+
+<p>
+
+Welcome to the Forward for Christ Commission Student Portal
+
+</p>
+
+
+
+</div>
+
+
+
+
+<div class="topbar-right">
+
+
+<button
+type="button"
+id="logoutBtn"
+class="logout-btn">
+
+
+<i class="fa-solid fa-right-from-bracket"></i>
+
+
+Logout
+
+
+</button>
+
+
+
+</div>
+
+
+
+</header>
+
+<!-- ==========================
+WELCOME CARD
+========================== -->
+
+
+<section class="welcome-card">
+
+
+<div class="welcome-left">
+
+
+<div class="welcome-text">
+
+
+<h2>
+Welcome Back,
+</h2>
+
+
+
+<h1 id="welcomeMemberName">
+
+Loading...
+
+</h1>
+
+
+
+
+<p>
+
+We are glad to have you as part of the
+
+<strong>
+
+Forward for Christ Commission
+
+</strong>
+
+family.
+
+</p>
+
+
+
+</div>
+
+
+</div>
+
+
+
+
+
+<div class="member-since">
+
+
+<h4>
+
+Today's Verse
+
+</h4>
+
+
+<h2>
+
+Matthew 28:19
+
+</h2>
+
+
+</div>
+
+
+
+</section>
+
+
+
+
+
+
+
+<!-- ==========================
+STATISTICS
+========================== -->
+
+
+<section class="statistics">
+
+
+
+
+
+<div class="stat-card"
+id="membersBtn"
+style="cursor:pointer;">
+
+
+<div class="stat-icon">
+
+<i class="fa-solid fa-users"></i>
+
+</div>
+
+
+<div class="stat-info">
+
+
+<h2 id="memberCount">
+0
+</h2>
+
+
+<p>
+Members
+</p>
+
+
+</div>
+
+
+</div>
+
+
+
+
+
+
+
+
+<div class="stat-card"
+id="eventsBtn"
+style="cursor:pointer;">
+
+
+<div class="stat-icon">
+
+
+<i class="fa-solid fa-calendar-check"></i>
+
+
+</div>
+
+
+
+<div class="stat-info">
+
+
+<h2 id="eventCount">
+0
+</h2>
+
+
+
+<p>
+Events
+</p>
+
+
+
+</div>
+
+
+</div>
+
+
+
+
+
+
+
+
+<div class="stat-card"
+id="prayersBtn"
+style="cursor:pointer;">
+
+
+<div class="stat-icon">
+
+
+<i class="fa-solid fa-hands-praying"></i>
+
+
+</div>
+
+
+
+
+<div class="stat-info">
+
+
+<h2 id="prayerCount">
+0
+</h2>
+
+
+
+<p>
+Prayer Requests
+</p>
+
+
+
+</div>
+
+
+</div>
+
+
+
+
+
+
+
+
+<div class="stat-card"
+id="bibleBtn"
+style="cursor:pointer;">
+
+
+<div class="stat-icon">
+
+
+<i class="fa-solid fa-book-open"></i>
+
+
+</div>
+
+
+
+<div class="stat-info">
+
+
+<h2 id="studyCount">
+0
+</h2>
+
+
+
+<p>
+Bible Studies
+</p>
+
+
+
+</div>
+
+
+</div>
+
+
+
+
+
+</section>
+
+
+
+
+
+
+
+
+
+<!-- ==========================
+DYNAMIC SECTION
+========================== -->
+
+
+<section id="dashboardContent">
+
+</section>
+
+
+
+
+
+
+
+
+
+<!-- ==========================
+DASHBOARD GRID
+========================== -->
+
+
+<section class="dashboard-grid">
+
+
+
+
+
+
+
+
+<!-- MY INFORMATION -->
+
+
+<div class="card">
+
+
+<div class="card-header-inside">
+
+
+<i class="fa-solid fa-user"></i>
+
+
+<h2>
+My Information
+</h2>
+
+
+</div>
+
+
+
+
+
+
+<div class="profile-details-stack">
+
+
+
+<div class="detail-row">
+
+<strong>
+First Name:
+</strong>
+
+<span id="firstName">
+---
+</span>
+
+</div>
+
+
+
+
+
+<div class="detail-row">
+
+<strong>
+Last Name:
+</strong>
+
+<span id="lastName">
+---
+</span>
+
+</div>
+
+
+
+
+
+<div class="detail-row">
+
+<strong>
+Email:
+</strong>
+
+<span id="email">
+---
+</span>
+
+</div>
+
+
+
+
+
+<div class="detail-row">
+
+<strong>
+Programme:
+</strong>
+
+<span id="programme">
+---
+</span>
+
+</div>
+
+
+
+
+
+<div class="detail-row">
+
+<strong>
+Year:
+</strong>
+
+<span id="year">
+---
+</span>
+
+</div>
+
+
+
+
+
+<div class="detail-row">
+
+<strong>
+Member Number:
+</strong>
+
+<span id="memberNumber">
+---
+</span>
+
+</div>
+
+
+
+</div>
+
+
+
+</div>
+
+
+
+
+
+
+
+
+
+
+<!-- UPCOMING ACTIVITIES -->
+
+
+<div class="card">
+
+
+<div class="card-header-inside">
+
+
+<i class="fa-solid fa-calendar-days"></i>
+
+
+<h2>
+Upcoming Activities
+</h2>
+
+
+</div>
+
+
+
+
+
+<div id="upcomingActivities">
+
+
+<div class="event-item">
+
+
+<p>
+Loading upcoming events...
+</p>
+
+
+</div>
+
+
+</div>
+
+
+
+</div>
+
+
+
+
+
+
+
+
+
+<!-- ANNOUNCEMENTS -->
+
+
+<div class="card"
+id="announcements-section">
+
+
+<div class="card-header-inside">
+
+
+<i class="fa-solid fa-bullhorn"></i>
+
+
+<h2>
+Announcements
+</h2>
+
+
+
+</div>
+
+
+
+
+
+<ul id="announcementList"
+class="announcement-list">
+
+
+<li>
+Loading announcements...
+</li>
+
+
+</ul>
+
+
+
+</div>
+
+
+
+
+
+
+
+
+<!-- MISSION -->
+
+
+<div class="card quote-card text-center">
+
+
+<div class="card-header-inside center-header">
+
+
+<i class="fa-solid fa-book-bible"></i>
+
+
+<h2>
+Mission
+</h2>
+
+
+
+</div>
+
+
+
+
+
+<blockquote class="scripture-text">
+
+
+"Go therefore and make disciples of all nations..."
+
+
+</blockquote>
+
+
+
+
+<h4 class="scripture-reference">
+
+Matthew 28:19
+
+</h4>
+
+
+
+</div>
+
+
+
+
+
+
+
+
+<!-- QUICK ACTIONS -->
+
+
+<div class="card">
+
+
+<div class="card-header-inside">
+
+
+<i class="fa-solid fa-bolt"></i>
+
+
+<h2>
+Quick Actions
+</h2>
+
+
+</div>
+
+
+
+
+
+<div class="action-buttons-stack">
+
+
+
+
+
+<button
+type="button"
+class="btn btn-primary w-100"
+onclick="location.href='profile.html'">
+
+View Profile
+
+</button>
+
+
+
+
+
+
+
+<button
+type="button"
+class="btn btn-secondary w-100"
+id="quickEventsBtn">
+
+Upcoming Events
+
+</button>
+
+
+
+
+
+
+
+<button
+type="button"
+class="btn btn-secondary w-100"
+id="quickPrayerBtn">
+
+Prayer Request
+
+</button>
+
+
+
+
+
+
+
+<button
+type="button"
+class="btn btn-secondary w-100"
+id="quickBibleBtn">
+
+Bible Studies
+
+</button>
+
+
+
+
+
+
+
+</div>
+
+
+
+</div>
+
+<!-- ==========================
+PRAYER VERSE CARD
+========================== -->
+
+
+<div class="card quote-card text-center">
+
+
+<div class="card-header-inside center-header">
+
+
+<i class="fa-solid fa-hands-praying"></i>
+
+
+
+<h2>
+
+Prayer Request
+
+</h2>
+
+
+
+</div>
+
+
+
+
+
+
+
+<blockquote class="scripture-text">
+
+
+"Do not be anxious about anything, but in everything by prayer and supplication..."
+
+
+</blockquote>
+
+
+
+
+
+
+
+<h4 class="scripture-reference">
+
+
+Philippians 4:6
+
+
+</h4>
+
+
+
+
+</div>
+
+
+
+
+
+
+
+</section>
+
+
+
+
+
+
+
+
+
+<!-- ==========================
+FOOTER
+========================== -->
+
+
+<footer class="footer">
+
+
+<p class="footer-tagline">
+
+
+Proclaiming the Everlasting Gospel
+
+
+</p>
+
+
+
+
+
+<small class="footer-copy">
+
+
+&copy; 2026 Forward for Christ Commission.
+
+All Rights Reserved.
+
+
+</small>
+
+
+
+</footer>
+
+
+
+
+
+
+
+
+</main>
+
+<!-- END MAIN CONTENT -->
+
+
+
+
+
+
+</div>
+
+<!-- END LAYOUT -->
+
+
+
+
+
+
+
+</body>
+
+
+</html>

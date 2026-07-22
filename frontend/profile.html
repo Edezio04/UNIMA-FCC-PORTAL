@@ -1,0 +1,668 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>FCC Member Profile</title>
+
+    <link rel="stylesheet" href="style.css">
+
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+    <!-- Prevent Dark Mode Flash -->
+    <script>
+
+        if(localStorage.getItem("darkMode")==="true"){
+
+            document.documentElement.classList.add("dark");
+
+        }
+
+    </script>
+
+    <script defer src="profile.js"></script>
+
+</head>
+
+<body class="dashboard-page">
+
+<div class="layout">
+
+    <!-- ===========================
+         SIDEBAR
+    ============================ -->
+
+    <aside class="sidebar">
+
+        <div class="sidebar-header">
+
+            <img src="logo.jpeg"
+                 class="sidebar-logo"
+                 alt="FCC Logo">
+
+            <h2>
+                Forward for Christ Commission
+            </h2>
+
+            <p>
+                Proclaiming the Everlasting Gospel
+            </p>
+
+        </div>
+
+
+        <nav class="sidebar-nav">
+
+            <a href="dashboard.html">
+
+                <i class="fa-solid fa-house"></i>
+
+                <span>Dashboard</span>
+
+            </a>
+
+            <a href="profile.html"
+               class="active">
+
+                <i class="fa-solid fa-user"></i>
+
+                <span>My Profile</span>
+
+            </a>
+
+            <a href="dashboard.html#announcements-section">
+
+                <i class="fa-solid fa-bullhorn"></i>
+
+                <span>Announcements</span>
+
+            </a>
+
+            <a href="event.html">
+
+                <i class="fa-solid fa-calendar-days"></i>
+
+                <span>Events</span>
+
+            </a>
+
+            <a href="settings.html">
+
+                <i class="fa-solid fa-gear"></i>
+
+                <span>Settings</span>
+
+            </a>
+
+        </nav>
+
+
+        <div class="mission-card">
+
+            <h3>
+                Matthew 28:19
+            </h3>
+
+            <p>
+
+                "Go therefore and make disciples
+                of all nations..."
+
+            </p>
+
+        </div>
+
+    </aside>
+
+
+
+    <!-- ===========================
+         MAIN CONTENT
+    ============================ -->
+
+    <main class="main-content">
+
+
+        <!-- TOPBAR -->
+
+        <header class="topbar">
+
+            <div class="topbar-left">
+
+                <h1>
+                    My Profile
+                </h1>
+
+                <p>
+
+                    Forward for Christ Commission
+                    Member Portal
+
+                </p>
+
+            </div>
+
+
+            <div class="topbar-right">
+
+                <button id="logoutBtn"
+                        class="logout-btn">
+
+                    <i class="fa-solid fa-right-from-bracket"></i>
+
+                    Logout
+
+                </button>
+
+            </div>
+
+        </header>
+
+
+
+        <!-- WELCOME CARD -->
+
+        <section class="welcome-card">
+
+            <div class="welcome-left">
+
+                <img src="logo.jpeg"
+                     class="welcome-avatar"
+                     alt="Profile">
+
+                <div class="welcome-text">
+
+                    <h2>
+                        Welcome back,
+                    </h2>
+
+                    <h1 id="memberName">
+
+                        Loading...
+
+                    </h1>
+
+                    <p>
+
+                        Thank you for being an active
+                        member of the
+
+                        <strong>
+
+                            Forward for Christ
+                            Commission
+
+                        </strong>
+
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="member-since">
+
+                <h4>
+
+                    Member Since
+
+                </h4>
+
+                <h2>
+
+                    2026
+
+                </h2>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- PROFILE CARD -->
+
+        <section class="profile-card">
+
+            <div class="card-header">
+
+                <i class="fa-solid fa-circle-user"></i>
+
+                <h2>
+
+                    Profile Information
+
+                </h2>
+
+            </div>
+
+
+
+            <div class="profile-grid">
+
+
+                <div class="info-group">
+
+                    <label>
+
+                        <i class="fa-solid fa-user"></i>
+
+                        First Name
+
+                    </label>
+
+                    <div class="info-value"
+                         id="firstName">
+
+                        ---
+
+                    </div>
+
+                </div>
+
+
+
+                <div class="info-group">
+
+                    <label>
+
+                        <i class="fa-solid fa-user"></i>
+
+                        Last Name
+
+                    </label>
+
+                    <div class="info-value"
+                         id="lastName">
+
+                        ---
+
+                    </div>
+
+                </div>
+
+
+
+                <div class="info-group">
+
+                    <label>
+
+                        <i class="fa-solid fa-envelope"></i>
+
+                        Email Address
+
+                    </label>
+
+                    <div class="info-value"
+                         id="email">
+
+                        ---
+
+                    </div>
+
+                </div>
+
+
+
+                <div class="info-group">
+
+                    <label>
+
+                        <i class="fa-solid fa-graduation-cap"></i>
+
+                        Programme
+
+                    </label>
+
+                    <div class="info-value"
+                         id="programme">
+
+                        ---
+
+                    </div>
+
+                </div>
+
+
+
+                <div class="info-group">
+
+                    <label>
+
+                        <i class="fa-solid fa-book"></i>
+
+                        Year of Study
+
+                    </label>
+
+                    <div class="info-value"
+                         id="year">
+
+                        ---
+
+                    </div>
+
+                </div>
+
+
+
+                <div class="info-group">
+
+                    <label>
+
+                        <i class="fa-solid fa-id-card"></i>
+
+                        Membership Number
+
+                    </label>
+
+                    <div class="info-value"
+                         id="memberNumber">
+
+                        ---
+
+                    </div>
+
+                </div>
+
+
+            </div>
+
+
+
+            <!-- ACTION BUTTONS -->
+
+            <div class="button-group">
+
+                <button
+                    class="btn btn-primary"
+                    id="editProfile">
+
+                    <i class="fa-solid fa-pen"></i>
+
+                    Edit Profile
+
+                </button>
+
+
+                <button
+                    class="btn btn-secondary"
+                    id="changePassword">
+
+                    <i class="fa-solid fa-lock"></i>
+
+                    Change Password
+
+                </button>
+
+            </div>
+
+        </section>
+
+                <!-- ==========================================
+             EDIT PROFILE MODAL
+        =========================================== -->
+
+        <div id="editProfileModal" class="modal">
+
+            <div class="modal-content">
+
+                <div class="modal-header">
+
+                    <h2>
+
+                        <i class="fa-solid fa-user-pen"></i>
+
+                        Edit Profile
+
+                    </h2>
+
+                    <span class="closeModal">&times;</span>
+
+                </div>
+
+                <form id="editProfileForm">
+
+                    <div class="form-group">
+
+                        <label>First Name</label>
+
+                        <input
+                            type="text"
+                            id="editFirstName"
+                            required>
+
+                    </div>
+
+                    <div class="form-group">
+
+                        <label>Last Name</label>
+
+                        <input
+                            type="text"
+                            id="editLastName"
+                            required>
+
+                    </div>
+
+                    <div class="form-group">
+
+                        <label>Programme</label>
+
+                        <input
+                            type="text"
+                            id="editProgramme"
+                            required>
+
+                    </div>
+
+                    <div class="form-group">
+
+                        <label>Year of Study</label>
+
+                        <select id="editYear">
+
+                            <option>Year 1</option>
+
+                            <option>Year 2</option>
+
+                            <option>Year 3</option>
+
+                            <option>Year 4</option>
+
+                            <option>Year 5</option>
+
+                        </select>
+
+                    </div>
+
+                    <div class="modal-buttons">
+
+                        <button
+                            type="button"
+                            class="btn btn-secondary closeModal">
+
+                            Cancel
+
+                        </button>
+
+                        <button
+                            type="submit"
+                            class="btn btn-primary">
+
+                            <i class="fa-solid fa-floppy-disk"></i>
+
+                            Save Changes
+
+                        </button>
+
+                    </div>
+
+                </form>
+
+            </div>
+
+        </div>
+
+
+
+
+
+        <!-- ==========================================
+             CHANGE PASSWORD MODAL
+        =========================================== -->
+
+        <div id="changePasswordModal" class="modal">
+
+            <div class="modal-content">
+
+                <div class="modal-header">
+
+                    <h2>
+
+                        <i class="fa-solid fa-lock"></i>
+
+                        Change Password
+
+                    </h2>
+
+                    <span class="closeModal">&times;</span>
+
+                </div>
+
+                <form id="changePasswordForm">
+
+                    <div class="form-group">
+
+                        <label>
+
+                            Current Password
+
+                        </label>
+
+                        <input
+                            type="password"
+                            id="currentPassword"
+                            required>
+
+                    </div>
+
+                    <div class="form-group">
+
+                        <label>
+
+                            New Password
+
+                        </label>
+
+                        <input
+                            type="password"
+                            id="newPassword"
+                            required>
+
+                    </div>
+
+                    <div class="password-strength">
+
+                        <div
+                            id="strengthLevel">
+
+                        </div>
+
+                    </div>
+
+                    <small
+                        id="strengthText">
+
+                        Password Strength
+
+                    </small>
+
+                    <div class="form-group">
+
+                        <label>
+
+                            Confirm Password
+
+                        </label>
+
+                        <input
+                            type="password"
+                            id="confirmPassword"
+                            required>
+
+                    </div>
+
+                    <small
+                        id="passwordMessage">
+
+                    </small>
+
+                    <div class="modal-buttons">
+
+                        <button
+                            type="button"
+                            class="btn btn-secondary closeModal">
+
+                            Cancel
+
+                        </button>
+
+                        <button
+                            type="submit"
+                            class="btn btn-primary">
+
+                            <i class="fa-solid fa-key"></i>
+
+                            Update Password
+
+                        </button>
+
+                    </div>
+
+                </form>
+
+            </div>
+
+        </div>
+
+
+
+
+
+        <!-- ==========================================
+             FOOTER
+        =========================================== -->
+
+        <footer class="footer">
+
+            <p class="footer-tagline">
+
+                We are stronger together in Christ
+
+            </p>
+
+            <small class="footer-copy">
+
+                &copy; 2026 Forward for Christ Commission.
+
+                All Rights Reserved.
+
+            </small>
+
+        </footer>
+
+    </main>
+
+</div>
+
+</body>
+
+</html>
