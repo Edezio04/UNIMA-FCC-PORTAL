@@ -55,21 +55,31 @@ const storage = multer.diskStorage({
 const upload = multer({ storage: storage });
 
 // =========================================================
-// MYSQL DATABASE
+// MYSQL DATABASE CONFIGURATION (CLOUD & LOCAL COMPATIBLE)
 // =========================================================
 
-const db = mysql.createConnection({
-    host: "localhost",
-    user: "myethel",
-    password: "123456",
-    database: "auth_db"
-});
+const dbConfig = {
+    host: process.env.DB_HOST || "localhost",
+    user: process.env.DB_USER || "myethel",
+    password: process.env.DB_PASSWORD || "123456",
+    database: process.env.DB_NAME || "auth_db",
+    port: process.env.DB_PORT ? Number(process.env.DB_PORT) : 3306,
+    // Enable SSL if connecting to cloud databases like Aiven / TiDB Cloud
+    ssl: process.env.DB_SSL === "true" ? { rejectUnauthorized: false } : false,
+    waitForConnections: true,
+    connectionLimit: 10,
+    queueLimit: 0
+};
 
-db.connect((err) => {
+// Use Connection Pool to prevent connection drops in production
+const db = mysql.createPool(dbConfig);
+
+db.getConnection((err, connection) => {
     if (err) {
-        console.log("Database connection failed:", err.message);
+        console.error("❌ Database connection failed:", err.message);
     } else {
-        console.log("Connected to MySQL");
+        console.log(`✅ Connected to MySQL Database [${dbConfig.database}] on ${dbConfig.host}:${dbConfig.port}`);
+        connection.release();
     }
 });
 
@@ -79,13 +89,12 @@ function formatToMySQLDate(dateString) {
     const d = new Date(dateString);
     if (isNaN(d.getTime())) return new Date().toISOString().slice(0, 19).replace('T', ' ');
     
-    // Convert to local ISO format for MySQL
     const pad = (n) => String(n).padStart(2, '0');
     return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
 }
 
 // =========================================================
-// HOME PAGE
+// HOME PAGE ROUTE
 // =========================================================
 
 app.get("/", (req, res) => {
@@ -220,12 +229,10 @@ app.delete("/members/:id", (req, res) => {
 });
 
 // =========================================================
-// EVENTS SECTION (FIXED)
+// EVENTS SECTION
 // =========================================================
 
-// GET EVENTS
 app.get("/events", (req, res) => {
-    // Safely fetch all upcoming or present events without aggressive auto-delete
     db.query("SELECT * FROM events ORDER BY eventDate ASC", (err, result) => {
         if (err) {
             console.error("GET /events error:", err);
@@ -235,9 +242,7 @@ app.get("/events", (req, res) => {
     });
 });
 
-// ADD EVENT
 app.post("/events", (req, res) => {
-    // Extract key names with fallbacks to handle frontend data safely
     const title = req.body.title || req.body.name || req.body.event_name;
     const description = req.body.description || req.body.desc || "";
     const rawDate = req.body.eventDate || req.body.date || req.body.event_date;
@@ -248,7 +253,6 @@ app.post("/events", (req, res) => {
     }
 
     const formattedDate = formatToMySQLDate(rawDate);
-
     const sql = `INSERT INTO events (title, description, eventDate, location) VALUES (?, ?, ?, ?)`;
 
     db.query(sql, [title, description, formattedDate, location], (err, result) => {
@@ -265,7 +269,6 @@ app.post("/events", (req, res) => {
     });
 });
 
-// DELETE EVENT
 app.delete("/events/:id", (req, res) => {
     db.query("DELETE FROM events WHERE id=?", [req.params.id], (err) => {
         if (err) return res.status(500).json({ message: "Event deletion failed" });
@@ -363,10 +366,20 @@ app.get("/announcements", (req, res) => {
 });
 
 // =========================================================
-// START SERVER
+// CATCH-ALL ROUTE FOR FRONTEND NAVIGATION
 // =========================================================
 
-const PORT = 3000;
+app.use((req, res) => {
+    res.status(404).json({
+        success: false,
+        message: "404 - Route not found"
+    });
+});
+// =========================================================
+// START SERVER (DYNAMIC PORT FOR CLOUD HOSTING)
+// =========================================================
+
+const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-    console.log(`Forward for Christ Commission running on http://localhost:${PORT}`);
+    console.log(` Forward for Christ Commission running on port ${PORT}`);
 });
