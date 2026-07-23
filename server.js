@@ -55,17 +55,22 @@ const storage = multer.diskStorage({
 const upload = multer({ storage: storage });
 
 // =========================================================
-// MYSQL DATABASE CONFIGURATION (CLOUD & LOCAL COMPATIBLE)
+// MYSQL DATABASE CONFIGURATION (TiDB CLOUD & LOCAL COMPATIBLE)
 // =========================================================
+
+const isSSL = process.env.DB_SSL === "true" || process.env.DB_SSL === true;
 
 const dbConfig = {
     host: process.env.DB_HOST || "localhost",
     user: process.env.DB_USER || "myethel",
     password: process.env.DB_PASSWORD || "123456",
-    database: process.env.DB_NAME || "auth_db",
+    database: process.env.DB_NAME || "test",
     port: process.env.DB_PORT ? Number(process.env.DB_PORT) : 3306,
-    // Enable SSL if connecting to cloud databases like Aiven / TiDB Cloud
-    ssl: process.env.DB_SSL === "true" ? { rejectUnauthorized: false } : false,
+    // Enhanced SSL config specifically tailored for TiDB Cloud / Render
+    ssl: isSSL ? {
+        minVersion: 'TLSv1.2',
+        rejectUnauthorized: false
+    } : false,
     waitForConnections: true,
     connectionLimit: 10,
     queueLimit: 0
@@ -375,11 +380,12 @@ app.use((req, res) => {
         message: "404 - Route not found"
     });
 });
+
 // =========================================================
 // START SERVER (DYNAMIC PORT FOR CLOUD HOSTING)
 // =========================================================
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-    console.log(` Forward for Christ Commission running on port ${PORT}`);
+    console.log(`Forward for Christ Commission running on port ${PORT}`);
 });
