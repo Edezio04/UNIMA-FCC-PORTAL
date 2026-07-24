@@ -26,6 +26,7 @@ app.use(cors({
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+// Serving static files from frontend and uploads folder
 app.use(express.static(path.join(__dirname, "frontend")));
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
@@ -67,7 +68,6 @@ const dbConfig = {
     password: process.env.DB_PASSWORD || "123456",
     database: process.env.DB_NAME || "test",
     port: process.env.DB_PORT ? Number(process.env.DB_PORT) : 3306,
-    // Enhanced SSL config specifically tailored for TiDB Cloud / Render
     ssl: isSSL ? {
         minVersion: 'TLSv1.2',
         rejectUnauthorized: false
@@ -77,7 +77,6 @@ const dbConfig = {
     queueLimit: 0
 };
 
-// Use Connection Pool to prevent connection drops in production
 const db = mysql.createPool(dbConfig);
 
 db.getConnection((err, connection) => {
@@ -89,7 +88,6 @@ db.getConnection((err, connection) => {
     }
 });
 
-// Helper to format ISO or local date string to MySQL DATETIME format (YYYY-MM-DD HH:MM:SS)
 function formatToMySQLDate(dateString) {
     if (!dateString) return new Date().toISOString().slice(0, 19).replace('T', ' ');
     const d = new Date(dateString);
@@ -383,7 +381,7 @@ app.use((req, res) => {
 });
 
 // =========================================================
-// START SERVER (DYNAMIC PORT FOR CLOUD HOSTING)
+// START SERVER
 // =========================================================
 
 const PORT = process.env.PORT || 3000;
