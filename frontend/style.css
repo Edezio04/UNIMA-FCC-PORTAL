@@ -7614,7 +7614,7 @@ button {
 }
 
 /* =========================================================
-   GLOBAL STYLES & RESET
+   GLOBAL RESET & BASE STYLES
    ========================================================= */
 * {
     margin: 0;
@@ -7624,84 +7624,105 @@ button {
 }
 
 body.auth-page {
-    background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+    background: linear-gradient(135deg, #0b192c 0%, #1e3e62 50%, #000000 100%);
     min-height: 100vh;
     display: flex;
     justify-content: center;
     align-items: center;
-    padding: 20px 15px;
+    padding: 25px 15px;
 }
 
 /* =========================================================
-   CARD CONTAINER
+   MAIN CARD CONTAINER
    ========================================================= */
 .container {
     background: #ffffff;
     width: 100%;
-    max-width: 650px;
-    padding: 35px 30px;
-    border-radius: 16px;
-    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.25);
-}
-
-/* Header & Logo Section */
-.logo-section {
-    text-align: center;
-    margin-bottom: 25px;
-}
-
-.logo-section .logo {
-    width: 90px;
-    height: 90px;
-    object-fit: cover;
-    border-radius: 50%;
-    border: 3px solid #1a365d;
-    margin-bottom: 12px;
-}
-
-.logo-section h1 {
-    font-size: 1.4rem;
-    color: #1a365d;
-    font-weight: 700;
-    line-height: 1.2;
-}
-
-.logo-section h2 {
-    font-size: 1.1rem;
-    color: #4a5568;
-    font-weight: 600;
-    margin-top: 5px;
-}
-
-.logo-section .verse {
-    font-size: 0.85rem;
-    color: #718096;
-    margin-top: 10px;
-    background: #f7fafc;
-    padding: 10px 14px;
-    border-radius: 8px;
-    border-left: 4px solid #1a365d;
-    display: inline-block;
+    max-width: 680px; /* Spacious on PC */
+    padding: 40px 35px;
+    border-radius: 20px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.35);
+    transition: all 0.3s ease;
 }
 
 /* =========================================================
-   FORM GRID (2 columns on PC, 1 column on Mobile)
+   HEADER & LOGO SECTION
+   ========================================================= */
+.logo-section {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+/* Made logo prominent and detailed */
+.logo-section .logo {
+    width: 130px;            /* Substantially larger for PC & Mobile */
+    height: 130px;
+    object-fit: cover;
+    border-radius: 50%;
+    border: 4px solid #1e3e62;
+    padding: 3px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+    margin-bottom: 15px;
+}
+
+.logo-section h1 {
+    font-size: 1.6rem;
+    color: #0b192c;
+    font-weight: 700;
+    letter-spacing: -0.3px;
+    margin-bottom: 4px;
+}
+
+.logo-section h2 {
+    font-size: 1.2rem;
+    color: #008b8b;
+    font-weight: 600;
+    margin-bottom: 12px;
+}
+
+.logo-section .verse {
+    font-size: 0.9rem;
+    color: #4a5568;
+    background: #f0f4f8;
+    padding: 12px 18px;
+    border-radius: 10px;
+    border-left: 4px solid #1e3e62;
+    display: inline-block;
+    line-height: 1.5;
+}
+
+.logo-section .verse i {
+    color: #1e3e62;
+    margin-right: 5px;
+}
+
+/* =========================================================
+   FORM & GRID LAYOUT
    ========================================================= */
 #registrationForm {
     display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 16px;
+    grid-template-columns: 1fr 1fr; /* 2 columns on PC */
+    gap: 18px;
 }
 
+#loginForm {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    max-width: 450px;
+    margin: 0 auto;
+}
+
+/* Input Group Styles */
 .input-group {
     display: flex;
     flex-direction: column;
 }
 
 .input-group label {
-    font-size: 0.85rem;
+    font-size: 0.88rem;
     font-weight: 600;
-    color: #2d3748;
+    color: #1e293b;
     margin-bottom: 6px;
     display: flex;
     align-items: center;
@@ -7709,30 +7730,37 @@ body.auth-page {
 }
 
 .input-group label i {
-    color: #1a365d;
+    color: #008b8b;
+    font-size: 0.95rem;
 }
 
 .input-group input,
 .input-group select {
     width: 100%;
-    padding: 12px 14px;
-    font-size: 0.9rem;
-    border: 1.5px solid #e2e8f0;
-    border-radius: 8px;
+    padding: 13px 16px;
+    font-size: 0.95rem;
+    border: 1.5px solid #cbd5e1;
+    border-radius: 10px;
     outline: none;
-    transition: all 0.3s ease;
     background-color: #f8fafc;
+    color: #0f172a;
+    transition: all 0.25s ease;
 }
 
 .input-group input:focus,
 .input-group select:focus {
-    border-color: #1a365d;
+    border-color: #1e3e62;
     background-color: #ffffff;
-    box-shadow: 0 0 0 3px rgba(26, 54, 93, 0.15);
+    box-shadow: 0 0 0 4px rgba(30, 62, 98, 0.12);
+}
+
+/* Dropdown arrow fix */
+select {
+    cursor: pointer;
 }
 
 /* =========================================================
-   AGREEMENT CHECKBOX & BUTTON (Spans full width)
+   AGREEMENT CHECKBOX & SUBMIT BUTTON
    ========================================================= */
 .agreement {
     grid-column: 1 / -1;
@@ -7743,16 +7771,16 @@ body.auth-page {
 }
 
 .agreement input[type="checkbox"] {
-    width: 18px;
-    height: 18px;
+    width: 20px;
+    height: 20px;
     margin-top: 2px;
     cursor: pointer;
-    accent-color: #1a365d;
+    accent-color: #1e3e62;
 }
 
 .agreement label {
-    font-size: 0.82rem;
-    color: #4a5568;
+    font-size: 0.85rem;
+    color: #475569;
     line-height: 1.4;
     cursor: pointer;
 }
@@ -7760,15 +7788,16 @@ body.auth-page {
 .register-btn {
     grid-column: 1 / -1;
     width: 100%;
-    padding: 14px;
-    background: #1a365d;
+    padding: 15px;
+    background: linear-gradient(135deg, #1e3e62 0%, #0b192c 100%);
     color: #ffffff;
     border: none;
-    border-radius: 8px;
-    font-size: 1rem;
+    border-radius: 10px;
+    font-size: 1.05rem;
     font-weight: 600;
     cursor: pointer;
-    transition: background 0.3s ease, transform 0.1s ease;
+    box-shadow: 0 4px 12px rgba(30, 62, 98, 0.3);
+    transition: all 0.25s ease;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -7777,25 +7806,29 @@ body.auth-page {
 }
 
 .register-btn:hover {
-    background: #2b4c7e;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 18px rgba(30, 62, 98, 0.4);
 }
 
 .register-btn:active {
-    transform: scale(0.98);
+    transform: translateY(0);
 }
 
-/* Footer Link */
+/* =========================================================
+   FOOTER NAVIGATION LINK
+   ========================================================= */
 .login-link {
     text-align: center;
-    margin-top: 20px;
-    font-size: 0.88rem;
-    color: #718096;
+    margin-top: 25px;
+    font-size: 0.9rem;
+    color: #64748b;
 }
 
 .login-link a {
-    color: #1a365d;
-    font-weight: 600;
+    color: #1e3e62;
+    font-weight: 700;
     text-decoration: none;
+    margin-left: 4px;
 }
 
 .login-link a:hover {
@@ -7803,29 +7836,44 @@ body.auth-page {
 }
 
 /* =========================================================
-   MOBILE RESPONSIVE BREAKPOINT
+   MOBILE RESPONSIVE BREAKPOINT (Phones)
    ========================================================= */
-@media (max-width: 600px) {
+@media (max-width: 650px) {
+    body.auth-page {
+        padding: 12px;
+    }
+
     .container {
-        padding: 25px 18px;
+        padding: 28px 20px;
+        border-radius: 16px;
     }
 
     #registrationForm {
-        grid-template-columns: 1fr; /* Switch to 1 column on phones */
+        grid-template-columns: 1fr; /* Switch to 1 clean single column on mobile */
         gap: 14px;
     }
 
+    .logo-section .logo {
+        width: 110px; /* Perfectly scaled logo for mobile */
+        height: 110px;
+    }
+
     .logo-section h1 {
-        font-size: 1.2rem;
+        font-size: 1.3rem;
     }
 
     .logo-section h2 {
-        font-size: 1rem;
+        font-size: 1.05rem;
     }
 
     .input-group input,
     .input-group select {
-        font-size: 16px; /* Prevents iOS auto-zoom */
-        padding: 11px 12px;
+        font-size: 16px; /* Prevents auto-zoom on mobile safari */
+        padding: 12px 14px;
+    }
+
+    .register-btn {
+        padding: 14px;
+        font-size: 1rem;
     }
 }
