@@ -85,7 +85,7 @@ function loadUserData() {
 }
 
 // ===================================================
-// LOAD DASHBOARD COUNTERS (UPDATED)
+// LOAD DASHBOARD COUNTERS
 // ===================================================
 
 async function fetchDashboardCounts() {
@@ -115,36 +115,53 @@ async function fetchDashboardCounts() {
 }
 
 // ===================================================
-// NAVIGATION EVENTS & SCROLL
+// NAVIGATION EVENTS & SIDEBAR HIGHLIGHTING
 // ===================================================
+
+function updateSidebarHighlight(clickedId) {
+    const navLinks = document.querySelectorAll(".sidebar-nav a");
+    navLinks.forEach(link => link.classList.remove("active"));
+    
+    const targetLink = document.getElementById(clickedId);
+    if (targetLink) {
+        targetLink.classList.add("active");
+    }
+}
 
 function bindNavigationEvents() {
     const navigationBindings = [
-        { id: "membersBtn", action: loadMembers },
-        { id: "eventsBtn", action: loadEvents },
-        { id: "prayersBtn", action: loadPrayers },
-        { id: "bibleBtn", action: loadBibleStudies },
-        { id: "sidebarEventsBtn", action: loadEvents },
-        { id: "sidebarBibleBtn", action: loadBibleStudies },
-        { id: "sidebarPrayerBtn", action: loadPrayers },
-        { id: "sidebarMembersBtn", action: loadMembers },
-        { id: "quickEventsBtn", action: loadEvents },
-        { id: "quickPrayerBtn", action: loadPrayers },
-        { id: "quickBibleBtn", action: loadBibleStudies }
+        { id: "membersBtn", action: loadMembers, sidebarId: "sidebarMembersBtn" },
+        { id: "eventsBtn", action: loadEvents, sidebarId: "sidebarEventsBtn" },
+        { id: "prayersBtn", action: loadPrayers, sidebarId: "sidebarPrayerBtn" },
+        { id: "bibleBtn", action: loadBibleStudies, sidebarId: "sidebarBibleBtn" },
+        
+        { id: "sidebarEventsBtn", action: loadEvents, sidebarId: "sidebarEventsBtn" },
+        { id: "sidebarBibleBtn", action: loadBibleStudies, sidebarId: "sidebarBibleBtn" },
+        { id: "sidebarPrayerBtn", action: loadPrayers, sidebarId: "sidebarPrayerBtn" },
+        { id: "sidebarMembersBtn", action: loadMembers, sidebarId: "sidebarMembersBtn" },
+        
+        { id: "quickEventsBtn", action: loadEvents, sidebarId: "sidebarEventsBtn" },
+        { id: "quickPrayerBtn", action: loadPrayers, sidebarId: "sidebarPrayerBtn" },
+        { id: "quickBibleBtn", action: loadBibleStudies, sidebarId: "sidebarBibleBtn" }
     ];
 
-    navigationBindings.forEach(({ id, action }) => {
-        document.getElementById(id)?.addEventListener("click", () => {
-            action();
-            scrollToView();
-        });
+    navigationBindings.forEach(({ id, action, sidebarId }) => {
+        const elem = document.getElementById(id);
+        if (elem) {
+            elem.addEventListener("click", (e) => {
+                e.preventDefault();
+                updateSidebarHighlight(sidebarId);
+                action();
+                scrollToView();
+            });
+        }
     });
 }
 
 function scrollToView() {
     const section = document.getElementById("dashboardContent");
     if (section) {
-        section.scrollIntoView({ behavior: "smooth" });
+        section.scrollIntoView({ behavior: "smooth", block: "start" });
     }
 }
 
@@ -313,12 +330,7 @@ async function handleCreateEvent(event) {
     const rawDate = document.getElementById("eventDate").value;
     const location = document.getElementById("eventLocation").value;
 
-    const data = {
-        title: title,
-        description: description,
-        eventDate: rawDate,
-        location: location
-    };
+    const data = { title, description, eventDate: rawDate, location };
 
     try {
         const response = await fetch("/events", {
@@ -329,7 +341,6 @@ async function handleCreateEvent(event) {
 
         if (response.ok) {
             alert("Event added successfully!");
-            // Refresh counts, sidebar, and views directly after database write
             await fetchDashboardCounts();
             await loadUpcomingActivities();
             await loadEvents();
@@ -619,7 +630,7 @@ async function deleteResource(endpoint, callback) {
 }
 
 // ===================================================
-// GLOBAL WINDOW EXPOSURES (CRITICAL FOR INLINE HTML)
+// GLOBAL WINDOW EXPOSURES
 // ===================================================
 window.fetchDashboardCounts = fetchDashboardCounts;
 window.loadUpcomingActivities = loadUpcomingActivities;
