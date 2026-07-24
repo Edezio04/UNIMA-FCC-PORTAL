@@ -7552,3 +7552,280 @@ button {
     pointer-events:auto;
 
 }
+
+/* =========================================================
+   MOBILE RESPONSIVE STYLES (For Phones & Tablets)
+   ========================================================= */
+
+/* Adjust container padding & width for mobile */
+@media (max-width: 768px) {
+    body {
+        padding: 15px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+    }
+
+    /* Form Container / Card */
+    .container, .card, .form-container, .login-box {
+        width: 100% !important;
+        max-width: 400px !important;
+        padding: 24px 20px !important;
+        margin: 0 auto !important;
+        box-sizing: border-box;
+        border-radius: 12px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Force double-column grid/flex forms into a single vertical column */
+    .form-group, .input-group, form {
+        display: flex !important;
+        flex-direction: column !important;
+        width: 100% !important;
+        gap: 12px;
+    }
+
+    /* Full width inputs & buttons */
+    input[type="text"],
+    input[type="email"],
+    input[type="password"],
+    select,
+    button {
+        width: 100% !important;
+        box-sizing: border-box !important;
+        font-size: 16px !important; /* Prevents auto-zoom on iOS safari */
+        padding: 12px 14px !important;
+    }
+
+    /* Logo scaling on phones */
+    img, .logo {
+        max-width: 120px !important;
+        height: auto !important;
+        margin: 0 auto 15px auto !important;
+        display: block;
+    }
+
+    /* Clean titles on small screens */
+    h1, h2, h3 {
+        font-size: 1.4rem !important;
+        text-align: center;
+    }
+}
+
+/* =========================================================
+   GLOBAL STYLES & RESET
+   ========================================================= */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+}
+
+body.auth-page {
+    background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px 15px;
+}
+
+/* =========================================================
+   CARD CONTAINER
+   ========================================================= */
+.container {
+    background: #ffffff;
+    width: 100%;
+    max-width: 650px;
+    padding: 35px 30px;
+    border-radius: 16px;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.25);
+}
+
+/* Header & Logo Section */
+.logo-section {
+    text-align: center;
+    margin-bottom: 25px;
+}
+
+.logo-section .logo {
+    width: 90px;
+    height: 90px;
+    object-fit: cover;
+    border-radius: 50%;
+    border: 3px solid #1a365d;
+    margin-bottom: 12px;
+}
+
+.logo-section h1 {
+    font-size: 1.4rem;
+    color: #1a365d;
+    font-weight: 700;
+    line-height: 1.2;
+}
+
+.logo-section h2 {
+    font-size: 1.1rem;
+    color: #4a5568;
+    font-weight: 600;
+    margin-top: 5px;
+}
+
+.logo-section .verse {
+    font-size: 0.85rem;
+    color: #718096;
+    margin-top: 10px;
+    background: #f7fafc;
+    padding: 10px 14px;
+    border-radius: 8px;
+    border-left: 4px solid #1a365d;
+    display: inline-block;
+}
+
+/* =========================================================
+   FORM GRID (2 columns on PC, 1 column on Mobile)
+   ========================================================= */
+#registrationForm {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+}
+
+.input-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.input-group label {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #2d3748;
+    margin-bottom: 6px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.input-group label i {
+    color: #1a365d;
+}
+
+.input-group input,
+.input-group select {
+    width: 100%;
+    padding: 12px 14px;
+    font-size: 0.9rem;
+    border: 1.5px solid #e2e8f0;
+    border-radius: 8px;
+    outline: none;
+    transition: all 0.3s ease;
+    background-color: #f8fafc;
+}
+
+.input-group input:focus,
+.input-group select:focus {
+    border-color: #1a365d;
+    background-color: #ffffff;
+    box-shadow: 0 0 0 3px rgba(26, 54, 93, 0.15);
+}
+
+/* =========================================================
+   AGREEMENT CHECKBOX & BUTTON (Spans full width)
+   ========================================================= */
+.agreement {
+    grid-column: 1 / -1;
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    margin-top: 5px;
+}
+
+.agreement input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    margin-top: 2px;
+    cursor: pointer;
+    accent-color: #1a365d;
+}
+
+.agreement label {
+    font-size: 0.82rem;
+    color: #4a5568;
+    line-height: 1.4;
+    cursor: pointer;
+}
+
+.register-btn {
+    grid-column: 1 / -1;
+    width: 100%;
+    padding: 14px;
+    background: #1a365d;
+    color: #ffffff;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.3s ease, transform 0.1s ease;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.register-btn:hover {
+    background: #2b4c7e;
+}
+
+.register-btn:active {
+    transform: scale(0.98);
+}
+
+/* Footer Link */
+.login-link {
+    text-align: center;
+    margin-top: 20px;
+    font-size: 0.88rem;
+    color: #718096;
+}
+
+.login-link a {
+    color: #1a365d;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.login-link a:hover {
+    text-decoration: underline;
+}
+
+/* =========================================================
+   MOBILE RESPONSIVE BREAKPOINT
+   ========================================================= */
+@media (max-width: 600px) {
+    .container {
+        padding: 25px 18px;
+    }
+
+    #registrationForm {
+        grid-template-columns: 1fr; /* Switch to 1 column on phones */
+        gap: 14px;
+    }
+
+    .logo-section h1 {
+        font-size: 1.2rem;
+    }
+
+    .logo-section h2 {
+        font-size: 1rem;
+    }
+
+    .input-group input,
+    .input-group select {
+        font-size: 16px; /* Prevents iOS auto-zoom */
+        padding: 11px 12px;
+    }
+}

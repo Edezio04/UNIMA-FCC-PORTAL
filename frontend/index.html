@@ -1,327 +1,116 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-
     <meta charset="UTF-8">
-
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
     <title>UNIMA FCC | Member Registration</title>
 
+    <!-- Custom CSS -->
     <link rel="stylesheet" href="style.css">
 
-    <!-- Google Font -->
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
-          rel="stylesheet">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
-    <!-- Font Awesome -->
-    <link rel="stylesheet"
-          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
-
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
 </head>
-
-
 <body class="auth-page">
 
+    <div class="container">
+        
+        <!-- Header / Logo Section -->
+        <div class="logo-section">
+            <img src="logo.jpeg" class="logo" alt="FCC Logo">
+            <h1>UNIMA Forward for Christ Commission</h1>
+            <h2>Member Registration</h2>
+            <p class="verse">
+                <i class="fa-solid fa-book-bible"></i>
+                "Go therefore and make disciples of all nations..."
+                <br>
+                <strong>Matthew 28:18-20</strong>
+            </p>
+        </div>
 
-<div class="container">
+        <!-- Registration Form -->
+        <form id="registrationForm">
 
+            <div class="input-group">
+                <label for="firstName">
+                    <i class="fa-solid fa-user"></i> First Name
+                </label>
+                <input type="text" id="firstName" name="firstName" placeholder="Enter First Name" required>
+            </div>
 
-    <div class="logo-section">
+            <div class="input-group">
+                <label for="lastName">
+                    <i class="fa-solid fa-user"></i> Last Name
+                </label>
+                <input type="text" id="lastName" name="lastName" placeholder="Enter Last Name" required>
+            </div>
 
+            <div class="input-group">
+                <label for="yearOfStudy">
+                    <i class="fa-solid fa-calendar"></i> Year of Study
+                </label>
+                <select id="yearOfStudy" name="yearOfStudy" required>
+                    <option value="">Select Year</option>
+                    <option value="Year 1">Year 1</option>
+                    <option value="Year 2">Year 2</option>
+                    <option value="Year 3">Year 3</option>
+                    <option value="Year 4">Year 4</option>
+                    <option value="Year 5">Year 5</option>
+                </select>
+            </div>
 
-        <img src="logo.jpeg"
-             class="logo"
-             alt="FCC Logo">
+            <div class="input-group">
+                <label for="programOfStudy">
+                    <i class="fa-solid fa-graduation-cap"></i> Programme of Study
+                </label>
+                <input type="text" id="programOfStudy" name="programOfStudy" placeholder="e.g. Computer Science" required>
+            </div>
 
+            <div class="input-group">
+                <label for="email">
+                    <i class="fa-solid fa-envelope"></i> Personal Email
+                </label>
+                <input type="email" id="email" name="email" placeholder="example@gmail.com" required>
+            </div>
 
-        <h1>
-            UNIMA Forward for Christ Commission
-        </h1>
+            <div class="input-group">
+                <label for="password">
+                    <i class="fa-solid fa-lock"></i> Password
+                </label>
+                <input type="password" id="password" name="password" placeholder="Enter Password" required>
+            </div>
 
+            <div class="input-group">
+                <label for="confirmPassword">
+                    <i class="fa-solid fa-lock"></i> Confirm Password
+                </label>
+                <input type="password" id="confirmPassword" name="confirmPassword" placeholder="Confirm Password" required>
+            </div>
 
-        <h2>
-            Member Registration
-        </h2>
+            <div class="agreement">
+                <input type="checkbox" id="agree" required>
+                <label for="agree">
+                    I agree with the mission of the <strong>UNIMA Forward for Christ Commission</strong> based on Matthew 28:19.
+                </label>
+            </div>
 
+            <button type="submit" class="register-btn">
+                <i class="fa-solid fa-user-plus"></i> Register
+            </button>
 
-        <p class="verse">
+        </form>
 
-            <i class="fa-solid fa-book-bible"></i>
-
-            "Go therefore and make disciples of all nations..."
-
-            <br>
-
-            <strong>
-                Matthew 28:18-20
-            </strong>
-
-        </p>
-
+        <!-- Footer Navigation -->
+        <div class="login-link">
+            Already a registered member? <a href="login.html">Login Here</a>
+        </div>
 
     </div>
 
-
-
-    <form id="registrationForm">
-
-
-        <div class="input-group">
-
-            <label>
-                <i class="fa-solid fa-user"></i>
-                First Name
-            </label>
-
-            <input
-                type="text"
-                id="firstName"
-                name="firstName"
-                placeholder="Enter First Name"
-                required>
-
-        </div>
-
-
-
-        <div class="input-group">
-
-            <label>
-                <i class="fa-solid fa-user"></i>
-                Last Name
-            </label>
-
-            <input
-                type="text"
-                id="lastName"
-                name="lastName"
-                placeholder="Enter Last Name"
-                required>
-
-        </div>
-
-
-
-        <div class="input-group">
-
-            <label>
-                <i class="fa-solid fa-calendar"></i>
-                Year of Study
-            </label>
-
-
-            <select
-                id="yearOfStudy"
-                name="yearOfStudy"
-                required>
-
-
-                <option value="">
-                    Select Year
-                </option>
-
-                <option>
-                    Year 1
-                </option>
-
-                <option>
-                    Year 2
-                </option>
-
-                <option>
-                    Year 3
-                </option>
-
-                <option>
-                    Year 4
-                </option>
-
-                <option>
-                    Year 5
-                </option>
-
-
-            </select>
-
-
-        </div>
-
-
-
-        <div class="input-group">
-
-
-            <label>
-
-                <i class="fa-solid fa-graduation-cap"></i>
-
-                Programme of Study
-
-            </label>
-
-
-            <input
-                type="text"
-                id="programOfStudy"
-                name="programOfStudy"
-                placeholder="Computer Science"
-                required>
-
-
-        </div>
-
-
-
-
-        <div class="input-group">
-
-
-            <label>
-
-                <i class="fa-solid fa-envelope"></i>
-
-                Personal Email
-
-            </label>
-
-
-            <input
-                type="email"
-                id="email"
-                name="email"
-                placeholder="example@gmail.com"
-                required>
-
-
-        </div>
-
-
-
-
-        <div class="input-group">
-
-
-            <label>
-
-                <i class="fa-solid fa-lock"></i>
-
-                Password
-
-            </label>
-
-
-            <input
-                type="password"
-                id="password"
-                name="password"
-                placeholder="Enter Password"
-                required>
-
-
-        </div>
-
-
-
-
-        <div class="input-group">
-
-
-            <label>
-
-                <i class="fa-solid fa-lock"></i>
-
-                Confirm Password
-
-            </label>
-
-
-            <input
-                type="password"
-                id="confirmPassword"
-                name="confirmPassword"
-                placeholder="Confirm Password"
-                required>
-
-
-        </div>
-
-
-
-
-        <div class="agreement">
-
-
-            <input
-                type="checkbox"
-                id="agree"
-                required>
-
-
-            <label for="agree">
-
-                I agree with the mission of the
-
-                <strong>
-                    UNIMA Forward for Christ Commission
-                </strong>
-
-                based on Matthew 28:19.
-
-            </label>
-
-
-        </div>
-
-
-
-
-        <button
-            type="submit"
-            class="register-btn">
-
-
-            <i class="fa-solid fa-user-plus"></i>
-
-            Register
-
-
-        </button>
-
-
-
-    </form>
-
-
-
-
-
-    <div class="login-link">
-
-
-        Already a registered member?
-
-
-        <a href="login.html">
-
-            Login Here
-
-        </a>
-
-
-    </div>
-
-
-
-</div>
-
-
-
-
-<script src="script.js"></script>
-
-
+    <!-- Main JavaScript -->
+    <script src="script.js"></script>
 </body>
-
 </html>
