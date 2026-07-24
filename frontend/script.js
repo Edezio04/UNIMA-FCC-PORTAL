@@ -51,7 +51,9 @@ if (form) {
 
 
 
-            const response = await fetch("http://localhost:3000/register", {
+            const response = await fetch(
+                "https://YOUR-RENDER-APP-NAME.onrender.com/register",
+                {
 
 
                 method:"POST",
@@ -70,6 +72,7 @@ if (form) {
 
 
             });
+
 
 
 
