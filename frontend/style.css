@@ -7614,266 +7614,75 @@ button {
 }
 
 /* =========================================================
-   GLOBAL RESET & BASE STYLES
+   CARD IMAGES & DASHBOARD RESPONSIVE FIXES
    ========================================================= */
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: 'Poppins', sans-serif;
+
+/* 1. Make images fill the card banner width cleanly */
+.card img, 
+.ministry-card img, 
+.activity-card img {
+    width: 100% !important;
+    height: 180px !important; /* Proper banner height */
+    object-fit: cover !important; /* Crops image nicely without distortion */
+    border-radius: 12px 12px 0 0; /* Rounds top corners */
+    display: block;
+    margin: 0 auto 15px auto;
 }
 
-body.auth-page {
-    background: linear-gradient(135deg, #0b192c 0%, #1e3e62 50%, #000000 100%);
-    min-height: 100vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 25px 15px;
+/* Ensure padding doesn't affect banner images */
+.card, .ministry-card {
+    overflow: hidden; /* Keeps image edges inside the card */
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+    border-radius: 12px;
+    border: 1px solid #e2e8f0;
 }
 
-/* =========================================================
-   MAIN CARD CONTAINER
-   ========================================================= */
-.container {
-    background: #ffffff;
-    width: 100%;
-    max-width: 680px; /* Spacious on PC */
-    padding: 40px 35px;
-    border-radius: 20px;
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.35);
-    transition: all 0.3s ease;
-}
-
-/* =========================================================
-   HEADER & LOGO SECTION
-   ========================================================= */
-.logo-section {
-    text-align: center;
-    margin-bottom: 30px;
-}
-
-/* Made logo prominent and detailed */
-.logo-section .logo {
-    width: 130px;            /* Substantially larger for PC & Mobile */
-    height: 130px;
-    object-fit: cover;
-    border-radius: 50%;
-    border: 4px solid #1e3e62;
-    padding: 3px;
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
-    margin-bottom: 15px;
-}
-
-.logo-section h1 {
-    font-size: 1.6rem;
-    color: #0b192c;
-    font-weight: 700;
-    letter-spacing: -0.3px;
-    margin-bottom: 4px;
-}
-
-.logo-section h2 {
-    font-size: 1.2rem;
-    color: #008b8b;
-    font-weight: 600;
-    margin-bottom: 12px;
-}
-
-.logo-section .verse {
-    font-size: 0.9rem;
-    color: #4a5568;
-    background: #f0f4f8;
-    padding: 12px 18px;
-    border-radius: 10px;
-    border-left: 4px solid #1e3e62;
-    display: inline-block;
-    line-height: 1.5;
-}
-
-.logo-section .verse i {
-    color: #1e3e62;
-    margin-right: 5px;
-}
-
-/* =========================================================
-   FORM & GRID LAYOUT
-   ========================================================= */
-#registrationForm {
+/* 2. Grid Container for Cards/Activities */
+.dashboard-grid, 
+.activities-container, 
+.cards-container, 
+.grid {
     display: grid;
-    grid-template-columns: 1fr 1fr; /* 2 columns on PC */
-    gap: 18px;
-}
-
-#loginForm {
-    display: flex;
-    flex-direction: column;
-    gap: 18px;
-    max-width: 450px;
-    margin: 0 auto;
-}
-
-/* Input Group Styles */
-.input-group {
-    display: flex;
-    flex-direction: column;
-}
-
-.input-group label {
-    font-size: 0.88rem;
-    font-weight: 600;
-    color: #1e293b;
-    margin-bottom: 6px;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-
-.input-group label i {
-    color: #008b8b;
-    font-size: 0.95rem;
-}
-
-.input-group input,
-.input-group select {
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 20px;
     width: 100%;
-    padding: 13px 16px;
-    font-size: 0.95rem;
-    border: 1.5px solid #cbd5e1;
-    border-radius: 10px;
-    outline: none;
-    background-color: #f8fafc;
-    color: #0f172a;
-    transition: all 0.25s ease;
-}
-
-.input-group input:focus,
-.input-group select:focus {
-    border-color: #1e3e62;
-    background-color: #ffffff;
-    box-shadow: 0 0 0 4px rgba(30, 62, 98, 0.12);
-}
-
-/* Dropdown arrow fix */
-select {
-    cursor: pointer;
+    box-sizing: border-box;
 }
 
 /* =========================================================
-   AGREEMENT CHECKBOX & SUBMIT BUTTON
+   MOBILE BREAKPOINT (Fixes horizontal scroll & overflow)
    ========================================================= */
-.agreement {
-    grid-column: 1 / -1;
-    display: flex;
-    align-items: flex-start;
-    gap: 10px;
-    margin-top: 5px;
-}
-
-.agreement input[type="checkbox"] {
-    width: 20px;
-    height: 20px;
-    margin-top: 2px;
-    cursor: pointer;
-    accent-color: #1e3e62;
-}
-
-.agreement label {
-    font-size: 0.85rem;
-    color: #475569;
-    line-height: 1.4;
-    cursor: pointer;
-}
-
-.register-btn {
-    grid-column: 1 / -1;
-    width: 100%;
-    padding: 15px;
-    background: linear-gradient(135deg, #1e3e62 0%, #0b192c 100%);
-    color: #ffffff;
-    border: none;
-    border-radius: 10px;
-    font-size: 1.05rem;
-    font-weight: 600;
-    cursor: pointer;
-    box-shadow: 0 4px 12px rgba(30, 62, 98, 0.3);
-    transition: all 0.25s ease;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 10px;
-    margin-top: 10px;
-}
-
-.register-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 18px rgba(30, 62, 98, 0.4);
-}
-
-.register-btn:active {
-    transform: translateY(0);
-}
-
-/* =========================================================
-   FOOTER NAVIGATION LINK
-   ========================================================= */
-.login-link {
-    text-align: center;
-    margin-top: 25px;
-    font-size: 0.9rem;
-    color: #64748b;
-}
-
-.login-link a {
-    color: #1e3e62;
-    font-weight: 700;
-    text-decoration: none;
-    margin-left: 4px;
-}
-
-.login-link a:hover {
-    text-decoration: underline;
-}
-
-/* =========================================================
-   MOBILE RESPONSIVE BREAKPOINT (Phones)
-   ========================================================= */
-@media (max-width: 650px) {
-    body.auth-page {
-        padding: 12px;
+@media (max-width: 768px) {
+    /* Prevent whole page horizontal overflow */
+    body, html {
+        overflow-x: hidden !important;
+        width: 100%;
     }
 
-    .container {
-        padding: 28px 20px;
-        border-radius: 16px;
+    /* Force all side-by-side grids to stack vertically on phones */
+    .dashboard-grid, 
+    .activities-container, 
+    .cards-container, 
+    .grid,
+    .main-content {
+        display: flex !important;
+        flex-direction: column !important;
+        width: 100% !important;
+        box-sizing: border-box;
     }
 
-    #registrationForm {
-        grid-template-columns: 1fr; /* Switch to 1 clean single column on mobile */
-        gap: 14px;
+    /* Cards span 100% of phone width */
+    .card, 
+    .ministry-card, 
+    .activity-card {
+        width: 100% !important;
+        max-width: 100% !important;
+        box-sizing: border-box;
+        margin-bottom: 15px;
     }
 
-    .logo-section .logo {
-        width: 110px; /* Perfectly scaled logo for mobile */
-        height: 110px;
-    }
-
-    .logo-section h1 {
-        font-size: 1.3rem;
-    }
-
-    .logo-section h2 {
-        font-size: 1.05rem;
-    }
-
-    .input-group input,
-    .input-group select {
-        font-size: 16px; /* Prevents auto-zoom on mobile safari */
-        padding: 12px 14px;
-    }
-
-    .register-btn {
-        padding: 14px;
-        font-size: 1rem;
+    .card img, 
+    .ministry-card img {
+        height: 160px !important; /* Slightly shorter on mobile */
     }
 }
