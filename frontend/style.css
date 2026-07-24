@@ -7686,3 +7686,136 @@ button {
         height: 160px !important; /* Slightly shorter on mobile */
     }
 }
+
+/* =========================================================
+   DASHBOARD & ACTIVITIES LAYOUT STYLES
+   ========================================================= */
+
+/* Main Dashboard Grid */
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 20px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.full-width-card {
+  grid-column: 1 / -1;
+}
+
+/* Activities Grid inside card */
+.activities-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+  margin-top: 15px;
+  width: 100%;
+}
+
+.activity-card-img {
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  overflow: hidden;
+  background: #ffffff;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.activity-card-img:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+}
+
+.activity-card-img img {
+  width: 100% !important;
+  height: 190px !important; /* Beautiful large picture height */
+  object-fit: cover !important;
+  display: block;
+}
+
+.activity-card-content {
+  padding: 16px;
+  flex-grow: 1;
+}
+
+.activity-card-content h3 {
+  margin: 0 0 8px 0;
+  font-size: 1.05rem;
+  color: #1a365d;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.activity-card-content p {
+  margin: 0;
+  font-size: 0.88rem;
+  color: #4a5568;
+  line-height: 1.5;
+}
+
+/* Stats section */
+.statistics {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 15px;
+  margin-bottom: 25px;
+}
+
+.stat-card {
+  cursor: pointer;
+}
+
+/* =========================================================
+   MOBILE RESPONSIVE OVERRIDES (Fixes Phone Clipping & Overflow)
+   ========================================================= */
+@media (max-width: 900px) {
+  .activities-grid {
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  }
+}
+
+@media (max-width: 768px) {
+  body.dashboard-page, html {
+    overflow-x: hidden !important;
+    width: 100%;
+  }
+
+  .layout {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .main-content {
+    padding: 15px !important;
+    width: 100% !important;
+    box-sizing: border-box;
+  }
+
+  /* Force single vertical column layout on phones */
+  .dashboard-grid {
+    display: flex !important;
+    flex-direction: column !important;
+    width: 100% !important;
+  }
+
+  .activities-grid {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 16px;
+  }
+
+  .activity-card-img img {
+    height: 180px !important; /* Prominent banner pictures on mobile */
+  }
+
+  .card, .full-width-card {
+    width: 100% !important;
+    box-sizing: border-box !important;
+    margin-bottom: 15px;
+  }
+}
