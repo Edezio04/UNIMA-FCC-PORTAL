@@ -387,23 +387,69 @@ async function handleCreatePrayer(event) {
     }
 }
 
-// Member Directory
+// Member Directory (Mobile Responsive Card Layout)
 async function loadMembers() {
     const container = document.getElementById("dashboardContent");
+    if (!container) return;
+
     container.innerHTML = `<div class="card"><h3>Loading Members...</h3></div>`;
+
     try {
         const response = await fetch("/members?t=" + Date.now());
         const members = await response.json();
-        let html = `<div class="card"><h2>👥 FCC Members</h2><hr><table width="100%" style="border-collapse: collapse; text-align: left;"><tr style="border-bottom: 2px solid #cbd5e1;"><th style="padding: 8px;">Member No</th><th style="padding: 8px;">Name</th><th style="padding: 8px;">Email</th><th style="padding: 8px;">Program</th><th style="padding: 8px;">Year</th><th style="padding: 8px;">Action</th></tr>`;
         const membersList = Array.isArray(members) ? members : (members.data || []);
-        membersList.forEach((member) => {
-            const resourceId = member.id || member._id;
-            html += `<tr style="border-bottom: 1px solid #e2e8f0;"><td style="padding: 8px;">${escapeHtml(member.memberNumber || "N/A")}</td><td style="padding: 8px;">${escapeHtml(member.firstName)} ${escapeHtml(member.lastName)}</td><td style="padding: 8px;">${escapeHtml(member.email)}</td><td style="padding: 8px;">${escapeHtml(member.programOfStudy || "N/A")}</td><td style="padding: 8px;">${escapeHtml(member.yearOfStudy || "N/A")}</td><td style="padding: 8px;"><button class="btn" style="background:red; color:white;" onclick="deleteResource('/members/${resourceId}', loadMembers)">Delete</button></td></tr>`;
-        });
-        html += `</table></div>`;
+
+        let html = `
+            <div class="card full-width-card">
+                <div class="card-header-inside" style="display: flex; justify-content: space-between; align-items: center;">
+                    <h2><i class="fa-solid fa-users"></i> FCC Members (${membersList.length})</h2>
+                </div>
+                <hr class="card-divider" style="margin: 12px 0;">
+        `;
+
+        if (membersList.length === 0) {
+            html += `<p style="padding: 10px;">No members registered yet.</p>`;
+        } else {
+            html += `<div class="members-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 12px;">`;
+
+            membersList.forEach((member) => {
+                const resourceId = member.id || member._id;
+                const memberNo = escapeHtml(member.memberNumber || "N/A");
+                const fullName = escapeHtml(`${member.firstName || ""} ${member.lastName || ""}`.trim() || "Unnamed Member");
+                const email = escapeHtml(member.email || "No Email");
+                const program = escapeHtml(member.programOfStudy || "N/A");
+                const year = escapeHtml(String(member.yearOfStudy || "N/A"));
+
+                html += `
+                    <div class="member-item-card" style="border: 1px solid rgba(0,0,0,0.12); border-radius: 8px; padding: 12px; background: #ffffff; display: flex; flex-direction: column; gap: 6px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <strong style="color: #0284c7; font-size: 0.85rem;">${memberNo}</strong>
+                            <span style="background: #e2e8f0; font-size: 0.75rem; padding: 2px 8px; border-radius: 12px; font-weight: 600;">Year ${year}</span>
+                        </div>
+                        <h3 style="margin: 2px 0; font-size: 1.05rem;">${fullName}</h3>
+                        <p style="margin: 0; font-size: 0.85rem; word-break: break-all; opacity: 0.8;">
+                            <i class="fa-regular fa-envelope"></i> ${email}
+                        </p>
+                        <p style="margin: 0; font-size: 0.85rem; opacity: 0.8;">
+                            <i class="fa-solid fa-graduation-cap"></i> ${program}
+                        </p>
+                        <div style="margin-top: 8px; text-align: right;">
+                            <button class="btn" style="background: #ef4444; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 0.8rem;" onclick="deleteResource('/members/${resourceId}', loadMembers)">
+                                <i class="fa-solid fa-trash"></i> Delete
+                            </button>
+                        </div>
+                    </div>
+                `;
+            });
+
+            html += `</div>`;
+        }
+
+        html += `</div>`;
         container.innerHTML = html;
     } catch (error) {
-        console.error(error);
+        console.error("Load members error:", error);
+        container.innerHTML = `<div class="card"><p style="color:red;">Failed to load members directory.</p></div>`;
     }
 }
 
