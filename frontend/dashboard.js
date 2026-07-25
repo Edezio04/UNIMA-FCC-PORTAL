@@ -2,9 +2,11 @@ document.addEventListener("DOMContentLoaded", () => {
     loadUserData();
     fetchDashboardCounts();
     loadUpcomingActivities();
+    loadAnnouncements();
     bindNavigationEvents();
 });
 
+// Helper Utilities
 function escapeHtml(text) {
     if (text === null || text === undefined) return "";
     return String(text)
@@ -42,6 +44,7 @@ function extractEventFields(event) {
     };
 }
 
+// User Profile Initializer
 function loadUserData() {
     const userJson = localStorage.getItem("fcc_user") || localStorage.getItem("user") || "{}";
     const isGuest = localStorage.getItem("isGuest") === "true";
@@ -61,13 +64,13 @@ function loadUserData() {
         setSafeText("programme", "Visitor");
         setSafeText("year", "N/A");
         setSafeText("memberNumber", "GUEST-0000");
-    } else if (user && user.firstName) {
-        setSafeText("welcomeMemberName", `${user.firstName} ${user.lastName || ""}`);
+    } else if (user && (user.firstName || user.email)) {
+        setSafeText("welcomeMemberName", `${user.firstName || "Member"} ${user.lastName || ""}`.trim());
         setSafeText("firstName", user.firstName || "---");
         setSafeText("lastName", user.lastName || "---");
         setSafeText("email", user.email || "---");
-        setSafeText("programme", user.programOfStudy || "---");
-        setSafeText("year", user.yearOfStudy || "---");
+        setSafeText("programme", user.programOfStudy || user.programme || "---");
+        setSafeText("year", user.yearOfStudy || user.year || "---");
         setSafeText("memberNumber", user.memberNumber || "---");
     }
 
@@ -82,6 +85,7 @@ function loadUserData() {
     }
 }
 
+// Dashboard Counts
 async function fetchDashboardCounts() {
     try {
         const cacheBust = "?t=" + Date.now();
@@ -91,6 +95,7 @@ async function fetchDashboardCounts() {
             fetch("/prayers" + cacheBust).then((r) => r.json()).catch(() => []),
             fetch("/bible-studies" + cacheBust).then((r) => r.json()).catch(() => [])
         ]);
+
         const members = Array.isArray(membersRes) ? membersRes : (membersRes.data || []);
         const events = Array.isArray(eventsRes) ? eventsRes : (eventsRes.data || []);
         const prayers = Array.isArray(prayersRes) ? prayersRes : (prayersRes.data || []);
@@ -149,6 +154,7 @@ function scrollToView() {
     }
 }
 
+// Activities & Announcements
 async function loadUpcomingActivities() {
     try {
         const response = await fetch("/events?t=" + Date.now());
@@ -169,28 +175,39 @@ async function loadUpcomingActivities() {
                 upcomingContainer.innerHTML = html;
             }
         }
-        updateAnnouncements(eventsList);
     } catch (error) {
         console.error("Activities error:", error);
     }
 }
 
-function updateAnnouncements(events) {
+async function loadAnnouncements() {
     const list = document.getElementById("announcementList");
     if (!list) return;
-    let html = "";
-    if (!events || events.length === 0) {
-        html = `<li>No upcoming events available.</li>`;
-    } else {
-        events.slice(0, 5).forEach((event) => {
-            const { title, rawDate, location } = extractEventFields(event);
+
+    try {
+        const response = await fetch("/announcements?t=" + Date.now());
+        const data = await response.json();
+        const announcements = Array.isArray(data) ? data : (data.data || []);
+
+        if (announcements.length === 0) {
+            list.innerHTML = `<li>No announcements available.</li>`;
+            return;
+        }
+
+        let html = "";
+        announcements.forEach((item) => {
+            const { title, rawDate, location } = extractEventFields(item);
             const parsedDate = parseEventDate(rawDate);
             html += `<li><strong>${escapeHtml(title)}</strong><br>🗓️ ${parsedDate.toLocaleDateString()} at ${escapeHtml(location)}</li>`;
         });
+        list.innerHTML = html;
+    } catch (err) {
+        console.error("Announcements error:", err);
+        list.innerHTML = `<li>Failed loading announcements.</li>`;
     }
-    list.innerHTML = html;
 }
 
+// Events Management
 async function loadEvents() {
     const container = document.getElementById("dashboardContent");
     if (!container) return;
@@ -239,6 +256,7 @@ async function handleCreateEvent(event) {
             alert("Event added successfully!");
             await fetchDashboardCounts();
             await loadUpcomingActivities();
+            await loadAnnouncements();
             await loadEvents();
         } else {
             const resData = await response.json().catch(() => ({}));
@@ -250,6 +268,7 @@ async function handleCreateEvent(event) {
     }
 }
 
+// Bible Studies Management
 async function loadBibleStudies() {
     const container = document.getElementById("dashboardContent");
     if (!container) return;
@@ -272,7 +291,7 @@ async function loadBibleStudies() {
                         <p>${escapeHtml(study.description || "No description")}</p>
                         <small>Uploaded: ${new Date(study.uploadedAt || study.created_at || Date.now()).toLocaleDateString()}</small>
                         <br><br>
-                        <a href="${downloadUrl}" class="btn btn-primary" target="_blank">⬇ Download</a> 
+                        <a href="${downloadUrl}" class="btn btn-primary">⬇ Download</a> 
                         <button class="btn" style="background:red; color:white; margin-left:5px;" onclick="deleteResource('/bible-studies/${resourceId}', loadBibleStudies)">🗑 Delete</button>
                     </div>`;
             });
@@ -311,6 +330,7 @@ async function handleStudyUpload(event) {
     }
 }
 
+// Prayer Requests Management
 async function loadPrayers() {
     const container = document.getElementById("dashboardContent");
     container.innerHTML = `<div class="card"><h3>Loading Prayer Requests...</h3></div>`;
@@ -367,6 +387,7 @@ async function handleCreatePrayer(event) {
     }
 }
 
+// Member Directory
 async function loadMembers() {
     const container = document.getElementById("dashboardContent");
     container.innerHTML = `<div class="card"><h3>Loading Members...</h3></div>`;
@@ -386,6 +407,7 @@ async function loadMembers() {
     }
 }
 
+// Global Delete Endpoint Caller
 async function deleteResource(endpoint, callback) {
     if (!confirm("Are you sure you want to delete?")) return;
     try {
@@ -394,6 +416,7 @@ async function deleteResource(endpoint, callback) {
             alert("Deleted successfully");
             await fetchDashboardCounts();
             await loadUpcomingActivities();
+            await loadAnnouncements();
             if (callback) callback();
         } else {
             alert("Delete failed");
@@ -404,8 +427,10 @@ async function deleteResource(endpoint, callback) {
     }
 }
 
+// Global Window Mounts
 window.fetchDashboardCounts = fetchDashboardCounts;
 window.loadUpcomingActivities = loadUpcomingActivities;
+window.loadAnnouncements = loadAnnouncements;
 window.loadEvents = loadEvents;
 window.renderAddEventForm = renderAddEventForm;
 window.handleCreateEvent = handleCreateEvent;
