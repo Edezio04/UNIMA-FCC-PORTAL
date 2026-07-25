@@ -7,6 +7,10 @@ const multer = require("multer");
 const path = require("path");
 const fs = require("fs");
 
+// CLOUDINARY INTEGRATION LIBRARIES
+const cloudinary = require("cloudinary").v2;
+const { CloudinaryStorage } = require("multer-storage-cloudinary");
+
 const app = express();
 
 // =========================================================
@@ -26,32 +30,28 @@ app.use(cors({
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// CREATE UPLOAD FOLDERS BEFORE SERVING
-const uploadsBaseDir = path.join(__dirname, "uploads");
-const uploadDir = path.join(__dirname, "uploads", "bible-studies");
-
-if (!fs.existsSync(uploadsBaseDir)) {
-    fs.mkdirSync(uploadsBaseDir, { recursive: true });
-}
-if (!fs.existsSync(uploadDir)) {
-    fs.mkdirSync(uploadDir, { recursive: true });
-}
-
-// Serving static files from frontend and uploads folder
+// Serving static files from frontend
 app.use(express.static(path.join(__dirname, "frontend")));
-app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 // =========================================================
-// MULTER FILE UPLOAD
+// CLOUDINARY CONFIGURATION & MULTER STORAGE
 // =========================================================
 
-const storage = multer.diskStorage({
-    destination: (req, file, cb) => {
-        cb(null, uploadDir);
-    },
-    filename: (req, file, cb) => {
-        const name = Date.now() + "-" + file.originalname;
-        cb(null, name);
+cloudinary.config({
+    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+    api_key: process.env.CLOUDINARY_API_KEY,
+    api_secret: process.env.CLOUDINARY_API_SECRET
+});
+
+const storage = new CloudinaryStorage({
+    cloudinary: cloudinary,
+    params: {
+        folder: "bible-studies",
+        resource_type: "auto", // Automatically handles PDFs, Docs, Images, etc.
+        public_id: (req, file) => {
+            const cleanName = path.parse(file.originalname).name.replace(/[^a-zA-Z0-9]/g, "_");
+            return Date.now() + "-" + cleanName;
+        }
     }
 });
 
@@ -312,7 +312,7 @@ app.delete("/prayers/:id", (req, res) => {
 });
 
 // =========================================================
-// BIBLE STUDIES & DOWNLOADS
+// BIBLE STUDIES & DOWNLOADS (POWERED BY CLOUDINARY)
 // =========================================================
 
 app.get("/bible-studies", (req, res) => {
@@ -322,42 +322,24 @@ app.get("/bible-studies", (req, res) => {
     });
 });
 
-// Explicit File Download Route with Enhanced Safety & Diagnostics
+// Redirects download link directly to Cloudinary public secure URL
 app.get("/bible-studies/download/:id", (req, res) => {
     const id = req.params.id;
 
-    db.query("SELECT fileName, filePath, title FROM bible_studies WHERE id=?", [id], (err, result) => {
+    db.query("SELECT filePath FROM bible_studies WHERE id=?", [id], (err, result) => {
         if (err || !result || result.length === 0) {
             console.error(`❌ Download failed: ID ${id} not found in database.`);
             return res.status(404).json({ success: false, message: "File record not found in database" });
         }
 
-        const study = result[0];
-        let actualFileName = study.fileName;
+        const cloudUrl = result[0].filePath;
 
-        // Fallback: Parse file name from filePath if fileName column was null/empty
-        if (!actualFileName && study.filePath) {
-            actualFileName = path.basename(study.filePath);
+        if (!cloudUrl) {
+            return res.status(404).json({ success: false, message: "Cloud URL missing for file" });
         }
 
-        if (!actualFileName) {
-            console.error(`❌ Download failed: Record ${id} has no fileName or filePath value.`);
-            return res.status(404).json({ success: false, message: "Filename missing in database record" });
-        }
-
-        const fullPath = path.join(uploadDir, actualFileName);
-
-        if (!fs.existsSync(fullPath)) {
-            console.error(`❌ Download failed: File missing on disk at ${fullPath}`);
-            return res.status(404).json({ success: false, message: "File missing on server storage" });
-        }
-
-        console.log(`✅ Downloading file for ID ${id}: ${actualFileName}`);
-        res.download(fullPath, actualFileName, (downloadErr) => {
-            if (downloadErr) {
-                console.error("❌ Transmission error during download:", downloadErr);
-            }
-        });
+        console.log(`✅ Redirecting download for ID ${id} to Cloudinary URL: ${cloudUrl}`);
+        res.redirect(cloudUrl);
     });
 });
 
@@ -368,38 +350,24 @@ app.post("/bible-studies", upload.single("document"), (req, res) => {
         return res.status(400).json({ message: "Please select document" });
     }
 
-    const fileName = req.file.filename;
-    const filePath = "/uploads/bible-studies/" + fileName;
+    const fileName = req.file.originalname;
+    const filePath = req.file.path; // Cloudinary CDN public URL
 
     db.query("INSERT INTO bible_studies (title, description, fileName, filePath) VALUES (?, ?, ?, ?)", [title, description, fileName, filePath], (err) => {
         if (err) {
             console.error("Upload DB Error:", err);
             return res.status(500).json({ message: "Upload failed" });
         }
-        res.json({ message: "Bible study uploaded successfully" });
+        res.json({ message: "Bible study uploaded successfully to cloud" });
     });
 });
 
 app.delete("/bible-studies/:id", (req, res) => {
     const id = req.params.id;
 
-    db.query("SELECT fileName, filePath FROM bible_studies WHERE id=?", [id], (err, result) => {
-        if (err || result.length === 0) {
-            return res.status(404).json({ message: "Document not found" });
-        }
-
-        const fileName = result[0].fileName || (result[0].filePath ? path.basename(result[0].filePath) : null);
-        
-        db.query("DELETE FROM bible_studies WHERE id=?", [id], (err) => {
-            if (err) return res.status(500).json({ message: "Delete failed" });
-            
-            if (fileName) {
-                const file = path.join(uploadDir, fileName);
-                if (fs.existsSync(file)) fs.unlinkSync(file);
-            }
-            
-            res.json({ message: "Bible study removed" });
-        });
+    db.query("DELETE FROM bible_studies WHERE id=?", [id], (err) => {
+        if (err) return res.status(500).json({ message: "Delete failed" });
+        res.json({ message: "Bible study removed" });
     });
 });
 
