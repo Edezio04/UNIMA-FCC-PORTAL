@@ -6,6 +6,7 @@ const cors = require("cors");
 const multer = require("multer");
 const path = require("path");
 const fs = require("fs");
+const https = require("https");
 
 // CLOUDINARY INTEGRATION LIBRARIES
 const cloudinary = require("cloudinary").v2;
@@ -45,13 +46,16 @@ cloudinary.config({
 
 const storage = new CloudinaryStorage({
     cloudinary: cloudinary,
-    params: {
-        folder: "bible-studies",
-        resource_type: "auto", // Automatically handles PDFs, Docs, Images, etc.
-        public_id: (req, file) => {
-            const cleanName = path.parse(file.originalname).name.replace(/[^a-zA-Z0-9]/g, "_");
-            return Date.now() + "-" + cleanName;
-        }
+    params: async (req, file) => {
+        // Detect extension to properly support mobile previews & downloads
+        const ext = path.extname(file.originalname).toLowerCase().replace('.', '');
+        const isImage = ['jpg', 'jpeg', 'png', 'gif', 'webp'].includes(ext);
+
+        return {
+            folder: "bible-studies",
+            resource_type: isImage ? "image" : "raw", // PDFs & Word Docs must be "raw" for mobile compatibility
+            public_id: Date.now() + "-" + path.parse(file.originalname).name.replace(/[^a-zA-Z0-9]/g, "_") + (isImage ? "" : "." + ext)
+        };
     }
 });
 
@@ -312,7 +316,7 @@ app.delete("/prayers/:id", (req, res) => {
 });
 
 // =========================================================
-// BIBLE STUDIES & DOWNLOADS (POWERED BY CLOUDINARY)
+// BIBLE STUDIES & DOWNLOADS (MOBILE & PC OPTIMIZED)
 // =========================================================
 
 app.get("/bible-studies", (req, res) => {
@@ -322,24 +326,34 @@ app.get("/bible-studies", (req, res) => {
     });
 });
 
-// Redirects download link directly to Cloudinary public secure URL
+// Stream file directly to mobile/PC browsers with Attachment headers
 app.get("/bible-studies/download/:id", (req, res) => {
     const id = req.params.id;
 
-    db.query("SELECT filePath FROM bible_studies WHERE id=?", [id], (err, result) => {
+    db.query("SELECT fileName, filePath FROM bible_studies WHERE id=?", [id], (err, result) => {
         if (err || !result || result.length === 0) {
             console.error(`❌ Download failed: ID ${id} not found in database.`);
             return res.status(404).json({ success: false, message: "File record not found in database" });
         }
 
         const cloudUrl = result[0].filePath;
+        const fileName = result[0].fileName || "document.pdf";
 
         if (!cloudUrl) {
             return res.status(404).json({ success: false, message: "Cloud URL missing for file" });
         }
 
-        console.log(`✅ Redirecting download for ID ${id} to Cloudinary URL: ${cloudUrl}`);
-        res.redirect(cloudUrl);
+        console.log(`✅ Streaming file for ID ${id} to client: ${fileName}`);
+
+        // Set attachment header so mobile browsers trigger direct downloads
+        res.setHeader("Content-Disposition", `attachment; filename="${encodeURIComponent(fileName)}"`);
+
+        https.get(cloudUrl, (stream) => {
+            stream.pipe(res);
+        }).on("error", (e) => {
+            console.error("❌ Download pipe error:", e);
+            res.redirect(cloudUrl); // Fallback to raw redirect if stream fails
+        });
     });
 });
 
