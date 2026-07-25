@@ -53,7 +53,7 @@ const storage = new CloudinaryStorage({
 
         return {
             folder: "bible-studies",
-            resource_type: isImage ? "image" : "raw", // PDFs & Word Docs must be "raw" for mobile compatibility
+            resource_type: isImage ? "image" : "raw", // PDFs & Word Docs must be "raw"
             public_id: Date.now() + "-" + path.parse(file.originalname).name.replace(/[^a-zA-Z0-9]/g, "_") + (isImage ? "" : "." + ext)
         };
     }
@@ -326,7 +326,6 @@ app.get("/bible-studies", (req, res) => {
     });
 });
 
-// Stream file directly to mobile/PC browsers with Attachment headers
 app.get("/bible-studies/download/:id", (req, res) => {
     const id = req.params.id;
 
@@ -336,24 +335,19 @@ app.get("/bible-studies/download/:id", (req, res) => {
             return res.status(404).json({ success: false, message: "File record not found in database" });
         }
 
-        const cloudUrl = result[0].filePath;
-        const fileName = result[0].fileName || "document.pdf";
+        let cloudUrl = result[0].filePath;
 
         if (!cloudUrl) {
             return res.status(404).json({ success: false, message: "Cloud URL missing for file" });
         }
 
-        console.log(`✅ Streaming file for ID ${id} to client: ${fileName}`);
+        // Force Cloudinary to serve as a download attachment across mobile & desktop browsers
+        if (cloudUrl.includes("/upload/")) {
+            cloudUrl = cloudUrl.replace("/upload/", "/upload/fl_attachment/");
+        }
 
-        // Set attachment header so mobile browsers trigger direct downloads
-        res.setHeader("Content-Disposition", `attachment; filename="${encodeURIComponent(fileName)}"`);
-
-        https.get(cloudUrl, (stream) => {
-            stream.pipe(res);
-        }).on("error", (e) => {
-            console.error("❌ Download pipe error:", e);
-            res.redirect(cloudUrl); // Fallback to raw redirect if stream fails
-        });
+        console.log(`✅ Directing download for ID ${id} to: ${cloudUrl}`);
+        res.redirect(cloudUrl);
     });
 });
 
