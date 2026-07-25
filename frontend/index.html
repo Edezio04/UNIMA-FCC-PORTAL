@@ -103,14 +103,34 @@
 
         </form>
 
-        <!-- Footer Navigation -->
-        <div class="login-link">
-            Already a registered member? <a href="login.html">Login Here</a>
+        <!-- Footer Navigation & Guest Access -->
+        <div class="login-link" style="margin-top: 15px; text-align: center;">
+            <p style="margin-bottom: 8px;">Already a registered member? <a href="login.html">Login Here</a></p>
+            
+            <div class="guest-divider" style="margin: 15px 0; border-top: 1px dashed #cbd5e1;"></div>
+            
+            <p style="font-size: 0.88rem; color: #64748b; margin-bottom: 8px;">Just exploring?</p>
+            <button id="guestBtn" type="button" class="btn-guest" style="width: 100%; padding: 10px; background: #f1f5f9; border: 1px solid #cbd5e1; border-radius: 6px; color: #334155; font-weight: 500; cursor: pointer; transition: all 0.2s ease;">
+                <i class="fa-solid fa-user-secret"></i> Continue as Guest
+            </button>
         </div>
 
     </div>
 
     <!-- Main JavaScript -->
     <script src="script.js"></script>
+
+    <!-- Guest Redirection Script -->
+    <script>
+        document.getElementById('guestBtn').addEventListener('click', function () {
+            // Store temporary guest identifiers in browser storage
+            localStorage.setItem('isGuest', 'true');
+            localStorage.setItem('userName', 'Guest User');
+            localStorage.setItem('userRole', 'Guest');
+
+            // Direct route straight to the dashboard
+            window.location.href = 'dashboard.html';
+        });
+    </script>
 </body>
 </html>
