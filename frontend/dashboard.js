@@ -43,22 +43,40 @@ function extractEventFields(event) {
 }
 
 function loadUserData() {
-    const user = JSON.parse(localStorage.getItem("fcc_user") || "{}");
-    if (user.firstName) {
+    const userJson = localStorage.getItem("fcc_user") || localStorage.getItem("user") || "{}";
+    const isGuest = localStorage.getItem("isGuest") === "true";
+    let user = {};
+
+    try {
+        user = JSON.parse(userJson);
+    } catch (e) {
+        console.error("Error parsing user data:", e);
+    }
+
+    if (isGuest) {
+        setSafeText("welcomeMemberName", "Guest User");
+        setSafeText("firstName", "Guest");
+        setSafeText("lastName", "Visitor");
+        setSafeText("email", "guest@fcc.org");
+        setSafeText("programme", "Visitor");
+        setSafeText("year", "N/A");
+        setSafeText("memberNumber", "GUEST-0000");
+    } else if (user && user.firstName) {
         setSafeText("welcomeMemberName", `${user.firstName} ${user.lastName || ""}`);
-        setSafeText("firstName", user.firstName);
-        setSafeText("lastName", user.lastName);
-        setSafeText("email", user.email);
-        setSafeText("programme", user.programOfStudy);
-        setSafeText("year", user.yearOfStudy);
+        setSafeText("firstName", user.firstName || "---");
+        setSafeText("lastName", user.lastName || "---");
+        setSafeText("email", user.email || "---");
+        setSafeText("programme", user.programOfStudy || "---");
+        setSafeText("year", user.yearOfStudy || "---");
         setSafeText("memberNumber", user.memberNumber || "---");
     }
+
     const logout = document.getElementById("logoutBtn");
     if (logout) {
         logout.onclick = () => {
             if (confirm("Logout from FCC Portal?")) {
-                localStorage.removeItem("fcc_user");
-                window.location.href = "login.html";
+                localStorage.clear();
+                window.location.href = "index.html";
             }
         };
     }
@@ -188,7 +206,7 @@ async function loadEvents() {
             eventsList.forEach((event) => {
                 const { id, title, description, rawDate, location } = extractEventFields(event);
                 const parsedDate = parseEventDate(rawDate);
-                html += `<div class="resource-card"><h3>${escapeHtml(title)}</h3><p>${escapeHtml(description)}</p><p>📍 ${escapeHtml(location)}</p><p>🗓 ${parsedDate.toLocaleString()}</p>${id ? `<button class="btn" style="background:red; color:white;" onclick="deleteResource('/events/${id}', loadEvents)">🗑 Remove</button>` : ""}</div>`;
+                html += `<div class="resource-card" style="margin-bottom: 15px; padding: 10px; border: 1px solid #e2e8f0; border-radius: 6px;"><h3>${escapeHtml(title)}</h3><p>${escapeHtml(description)}</p><p>📍 ${escapeHtml(location)}</p><p>🗓 ${parsedDate.toLocaleString()}</p>${id ? `<button class="btn" style="background:red; color:white;" onclick="deleteResource('/events/${id}', loadEvents)">🗑 Remove</button>` : ""}</div>`;
             });
         }
         html += `</div>`;
@@ -244,10 +262,19 @@ async function loadBibleStudies() {
         if (studiesList.length === 0) {
             html += `<p>No Bible studies uploaded yet.</p>`;
         } else {
-            html += `<div class="cards-grid">`;
+            html += `<div class="cards-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 15px;">`;
             studiesList.forEach((study) => {
                 const resourceId = study.id || study._id;
-                html += `<div class="resource-card"><h3>${escapeHtml(study.title)}</h3><p>${escapeHtml(study.description || "No description")}</p><small>Uploaded: ${new Date(study.uploadedAt || Date.now()).toLocaleDateString()}</small><br><br><a href="${study.filePath}" target="_blank" class="btn btn-primary">⬇ Download</a> <button class="btn" style="background:red; color:white; margin-left:10px;" onclick="deleteResource('/bible-studies/${resourceId}', loadBibleStudies)">🗑 Delete</button></div>`;
+                const downloadUrl = `/bible-studies/download/${resourceId}`;
+                html += `
+                    <div class="resource-card" style="border: 1px solid #e2e8f0; padding: 15px; border-radius: 8px;">
+                        <h3>${escapeHtml(study.title)}</h3>
+                        <p>${escapeHtml(study.description || "No description")}</p>
+                        <small>Uploaded: ${new Date(study.uploadedAt || study.created_at || Date.now()).toLocaleDateString()}</small>
+                        <br><br>
+                        <a href="${downloadUrl}" class="btn btn-primary" target="_blank">⬇ Download</a> 
+                        <button class="btn" style="background:red; color:white; margin-left:5px;" onclick="deleteResource('/bible-studies/${resourceId}', loadBibleStudies)">🗑 Delete</button>
+                    </div>`;
             });
             html += `</div>`;
         }
@@ -297,7 +324,7 @@ async function loadPrayers() {
         } else {
             prayersList.forEach((prayer) => {
                 const resourceId = prayer.id || prayer._id;
-                html += `<div class="resource-card"><h3>From: ${escapeHtml(prayer.memberName)}</h3><p>"${escapeHtml(prayer.request)}"</p><small>${new Date(prayer.dateCreated || Date.now()).toLocaleDateString()}</small><br><br><button class="btn" style="background:red; color:white;" onclick="deleteResource('/prayers/${resourceId}', loadPrayers)">🗑 Remove</button></div>`;
+                html += `<div class="resource-card" style="margin-bottom: 12px; padding: 10px; border-left: 4px solid #0284c7; background: #f8fafc;"><h3>From: ${escapeHtml(prayer.memberName)}</h3><p>"${escapeHtml(prayer.request)}"</p><small>${new Date(prayer.dateCreated || Date.now()).toLocaleDateString()}</small><br><br><button class="btn" style="background:red; color:white;" onclick="deleteResource('/prayers/${resourceId}', loadPrayers)">🗑 Remove</button></div>`;
             });
         }
         html += `</div>`;
@@ -309,8 +336,11 @@ async function loadPrayers() {
 
 function renderAddPrayerForm() {
     const container = document.getElementById("dashboardContent");
-    const user = JSON.parse(localStorage.getItem("fcc_user") || "{}");
+    const userJson = localStorage.getItem("fcc_user") || localStorage.getItem("user") || "{}";
+    let user = {};
+    try { user = JSON.parse(userJson); } catch(e) {}
     const fullName = `${user.firstName || ""} ${user.lastName || ""}`.trim();
+
     container.innerHTML = `<div class="card"><h2>Submit Prayer Request</h2><form onsubmit="handleCreatePrayer(event)"><input id="prayerMemberName" value="${escapeHtml(fullName)}" placeholder="Your Name" required class="w-100"><br><br><input id="prayerMemberEmail" value="${escapeHtml(user.email || "")}" type="email" required class="w-100"><br><br><textarea id="prayerRequestText" placeholder="Prayer request" required class="w-100"></textarea><br><br><button type="submit" class="btn btn-primary">Submit</button> <button type="button" class="btn btn-secondary" onclick="loadPrayers()">Cancel</button></form></div>`;
 }
 
@@ -343,11 +373,11 @@ async function loadMembers() {
     try {
         const response = await fetch("/members?t=" + Date.now());
         const members = await response.json();
-        let html = `<div class="card"><h2>👥 FCC Members</h2><hr><table width="100%"><tr><th>Member No</th><th>Name</th><th>Email</th><th>Program</th><th>Year</th><th>Action</th></tr>`;
+        let html = `<div class="card"><h2>👥 FCC Members</h2><hr><table width="100%" style="border-collapse: collapse; text-align: left;"><tr style="border-bottom: 2px solid #cbd5e1;"><th style="padding: 8px;">Member No</th><th style="padding: 8px;">Name</th><th style="padding: 8px;">Email</th><th style="padding: 8px;">Program</th><th style="padding: 8px;">Year</th><th style="padding: 8px;">Action</th></tr>`;
         const membersList = Array.isArray(members) ? members : (members.data || []);
         membersList.forEach((member) => {
             const resourceId = member.id || member._id;
-            html += `<tr><td>${escapeHtml(member.memberNumber)}</td><td>${escapeHtml(member.firstName)} ${escapeHtml(member.lastName)}</td><td>${escapeHtml(member.email)}</td><td>${escapeHtml(member.programOfStudy)}</td><td>${escapeHtml(member.yearOfStudy)}</td><td><button class="btn" style="background:red; color:white;" onclick="deleteResource('/members/${resourceId}', loadMembers)">Delete</button></td></tr>`;
+            html += `<tr style="border-bottom: 1px solid #e2e8f0;"><td style="padding: 8px;">${escapeHtml(member.memberNumber || "N/A")}</td><td style="padding: 8px;">${escapeHtml(member.firstName)} ${escapeHtml(member.lastName)}</td><td style="padding: 8px;">${escapeHtml(member.email)}</td><td style="padding: 8px;">${escapeHtml(member.programOfStudy || "N/A")}</td><td style="padding: 8px;">${escapeHtml(member.yearOfStudy || "N/A")}</td><td style="padding: 8px;"><button class="btn" style="background:red; color:white;" onclick="deleteResource('/members/${resourceId}', loadMembers)">Delete</button></td></tr>`;
         });
         html += `</table></div>`;
         container.innerHTML = html;

@@ -26,19 +26,20 @@ app.use(cors({
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Serving static files from frontend and uploads folder
-app.use(express.static(path.join(__dirname, "frontend")));
-app.use("/uploads", express.static(path.join(__dirname, "uploads")));
-
-// =========================================================
-// CREATE UPLOAD FOLDER
-// =========================================================
-
+// CREATE UPLOAD FOLDERS BEFORE SERVING
+const uploadsBaseDir = path.join(__dirname, "uploads");
 const uploadDir = path.join(__dirname, "uploads", "bible-studies");
 
+if (!fs.existsSync(uploadsBaseDir)) {
+    fs.mkdirSync(uploadsBaseDir, { recursive: true });
+}
 if (!fs.existsSync(uploadDir)) {
     fs.mkdirSync(uploadDir, { recursive: true });
 }
+
+// Serving static files from frontend and uploads folder
+app.use(express.static(path.join(__dirname, "frontend")));
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 // =========================================================
 // MULTER FILE UPLOAD
@@ -311,13 +312,52 @@ app.delete("/prayers/:id", (req, res) => {
 });
 
 // =========================================================
-// BIBLE STUDIES
+// BIBLE STUDIES & DOWNLOADS
 // =========================================================
 
 app.get("/bible-studies", (req, res) => {
     db.query("SELECT * FROM bible_studies ORDER BY id DESC", (err, result) => {
         if (err) return res.status(500).json({ message: "Failed loading bible studies" });
         res.json(result);
+    });
+});
+
+// Explicit File Download Route with Enhanced Safety & Diagnostics
+app.get("/bible-studies/download/:id", (req, res) => {
+    const id = req.params.id;
+
+    db.query("SELECT fileName, filePath, title FROM bible_studies WHERE id=?", [id], (err, result) => {
+        if (err || !result || result.length === 0) {
+            console.error(`❌ Download failed: ID ${id} not found in database.`);
+            return res.status(404).json({ success: false, message: "File record not found in database" });
+        }
+
+        const study = result[0];
+        let actualFileName = study.fileName;
+
+        // Fallback: Parse file name from filePath if fileName column was null/empty
+        if (!actualFileName && study.filePath) {
+            actualFileName = path.basename(study.filePath);
+        }
+
+        if (!actualFileName) {
+            console.error(`❌ Download failed: Record ${id} has no fileName or filePath value.`);
+            return res.status(404).json({ success: false, message: "Filename missing in database record" });
+        }
+
+        const fullPath = path.join(uploadDir, actualFileName);
+
+        if (!fs.existsSync(fullPath)) {
+            console.error(`❌ Download failed: File missing on disk at ${fullPath}`);
+            return res.status(404).json({ success: false, message: "File missing on server storage" });
+        }
+
+        console.log(`✅ Downloading file for ID ${id}: ${actualFileName}`);
+        res.download(fullPath, actualFileName, (downloadErr) => {
+            if (downloadErr) {
+                console.error("❌ Transmission error during download:", downloadErr);
+            }
+        });
     });
 });
 
@@ -333,7 +373,7 @@ app.post("/bible-studies", upload.single("document"), (req, res) => {
 
     db.query("INSERT INTO bible_studies (title, description, fileName, filePath) VALUES (?, ?, ?, ?)", [title, description, fileName, filePath], (err) => {
         if (err) {
-            console.error(err);
+            console.error("Upload DB Error:", err);
             return res.status(500).json({ message: "Upload failed" });
         }
         res.json({ message: "Bible study uploaded successfully" });
@@ -343,16 +383,21 @@ app.post("/bible-studies", upload.single("document"), (req, res) => {
 app.delete("/bible-studies/:id", (req, res) => {
     const id = req.params.id;
 
-    db.query("SELECT fileName FROM bible_studies WHERE id=?", [id], (err, result) => {
+    db.query("SELECT fileName, filePath FROM bible_studies WHERE id=?", [id], (err, result) => {
         if (err || result.length === 0) {
             return res.status(404).json({ message: "Document not found" });
         }
 
-        const file = path.join(uploadDir, result[0].fileName);
-
+        const fileName = result[0].fileName || (result[0].filePath ? path.basename(result[0].filePath) : null);
+        
         db.query("DELETE FROM bible_studies WHERE id=?", [id], (err) => {
             if (err) return res.status(500).json({ message: "Delete failed" });
-            if (fs.existsSync(file)) fs.unlinkSync(file);
+            
+            if (fileName) {
+                const file = path.join(uploadDir, fileName);
+                if (fs.existsSync(file)) fs.unlinkSync(file);
+            }
+            
             res.json({ message: "Bible study removed" });
         });
     });
