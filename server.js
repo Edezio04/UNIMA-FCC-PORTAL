@@ -24,7 +24,7 @@ app.use(cors({
 }));
 
 // =========================================================
-// MIDDLEWARE
+// MIDDLEWARE & STATIC FILES
 // =========================================================
 
 app.use(express.json());
@@ -32,6 +32,9 @@ app.use(express.urlencoded({ extended: true }));
 
 // Serving static files from frontend
 app.use(express.static(path.join(__dirname, "frontend")));
+
+// Serve uploaded files statically so legacy local links still work
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 // =========================================================
 // CLOUDINARY CONFIGURATION & MULTER STORAGE
@@ -314,7 +317,7 @@ app.delete("/prayers/:id", (req, res) => {
 });
 
 // =========================================================
-// BIBLE STUDIES & DOWNLOADS (MOBILE & PC OPTIMIZED)
+// BIBLE STUDIES & DOWNLOADS (HYBRID LOCAL + CLOUDINARY)
 // =========================================================
 
 app.get("/bible-studies", (req, res) => {
@@ -324,7 +327,7 @@ app.get("/bible-studies", (req, res) => {
     });
 });
 
-// Direct same-origin file streaming for mobile compatibility
+// Hybrid download route handling both Cloudinary URLs and Legacy local disk files
 app.get("/bible-studies/download/:id", async (req, res) => {
     const id = req.params.id;
 
@@ -334,33 +337,47 @@ app.get("/bible-studies/download/:id", async (req, res) => {
             return res.status(404).json({ success: false, message: "File record not found in database" });
         }
 
-        const cloudUrl = result[0].filePath;
+        const filePath = result[0].filePath;
         const fileName = result[0].fileName || "document.pdf";
 
-        if (!cloudUrl) {
-            return res.status(404).json({ success: false, message: "Cloud URL missing for file" });
+        if (!filePath) {
+            return res.status(404).json({ success: false, message: "File path missing" });
         }
 
-        try {
-            console.log(`✅ Streaming file from cloud for ID ${id}: ${fileName}`);
+        // Check if the file path is a Cloudinary URL
+        if (filePath.startsWith("http://") || filePath.startsWith("https://")) {
+            try {
+                console.log(`✅ Streaming file from Cloudinary for ID ${id}: ${fileName}`);
 
-            const response = await fetch(cloudUrl);
+                const response = await fetch(filePath);
 
-            if (!response.ok) {
-                throw new Error(`Failed fetching from cloud: ${response.statusText}`);
+                if (!response.ok) {
+                    throw new Error(`Failed fetching from Cloudinary: ${response.statusText}`);
+                }
+
+                const arrayBuffer = await response.arrayBuffer();
+                const buffer = Buffer.from(arrayBuffer);
+
+                res.setHeader("Content-Type", response.headers.get("content-type") || "application/octet-stream");
+                res.setHeader("Content-Disposition", `attachment; filename="${encodeURIComponent(fileName)}"`);
+                res.setHeader("Content-Length", buffer.length);
+
+                return res.send(buffer);
+            } catch (fetchErr) {
+                console.error("❌ Cloud download stream error:", fetchErr);
+                return res.status(500).json({ success: false, message: "Failed downloading file from cloud storage" });
+            }
+        } else {
+            // Fallback for legacy local disk uploads
+            console.log(`📂 Fallback to local server file for ID ${id}: ${filePath}`);
+            const cleanPath = filePath.startsWith("/") ? filePath.substring(1) : filePath;
+            const absoluteLocalPath = path.join(__dirname, cleanPath);
+
+            if (!fs.existsSync(absoluteLocalPath)) {
+                return res.status(404).json({ success: false, message: "Local file no longer exists on server disk" });
             }
 
-            const arrayBuffer = await response.arrayBuffer();
-            const buffer = Buffer.from(arrayBuffer);
-
-            res.setHeader("Content-Type", response.headers.get("content-type") || "application/octet-stream");
-            res.setHeader("Content-Disposition", `attachment; filename="${encodeURIComponent(fileName)}"`);
-            res.setHeader("Content-Length", buffer.length);
-
-            return res.send(buffer);
-        } catch (fetchErr) {
-            console.error("❌ Download stream error:", fetchErr);
-            return res.status(500).json({ success: false, message: "Failed downloading file from cloud storage" });
+            return res.download(absoluteLocalPath, fileName);
         }
     });
 });
@@ -373,7 +390,7 @@ app.post("/bible-studies", upload.single("document"), (req, res) => {
     }
 
     const fileName = req.file.originalname;
-    const filePath = req.file.path;
+    const filePath = req.file.path; // Multer-storage-cloudinary attaches the full HTTPS Cloudinary URL here
 
     db.query("INSERT INTO bible_studies (title, description, fileName, filePath) VALUES (?, ?, ?, ?)", [title, description, fileName, filePath], (err) => {
         if (err) {
