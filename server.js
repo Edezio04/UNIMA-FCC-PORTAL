@@ -63,7 +63,7 @@ const storage = new CloudinaryStorage({
 const upload = multer({ storage: storage });
 
 // =========================================================
-// MYSQL DATABASE CONFIGURATION (TiDB CLOUD & LOCAL COMPATIBLE)
+// MYSQL DATABASE CONFIGURATION (TiDB CLOUD OPTIMIZED)
 // =========================================================
 
 const isSSL = process.env.DB_SSL === "true" || process.env.DB_SSL === true;
@@ -72,25 +72,29 @@ const dbConfig = {
     host: process.env.DB_HOST || "localhost",
     user: process.env.DB_USER || "myethel",
     password: process.env.DB_PASSWORD || "123456",
-    database: process.env.DB_NAME || "test",
-    port: process.env.DB_PORT ? Number(process.env.DB_PORT) : 3306,
+    database: process.env.DB_NAME || "sys",
+    port: process.env.DB_PORT ? Number(process.env.DB_PORT) : 4000,
     ssl: isSSL ? {
-        minVersion: 'TLSv1.2',
         rejectUnauthorized: false
     } : false,
     waitForConnections: true,
     connectionLimit: 10,
-    queueLimit: 0
+    maxIdle: 2,                  // Clean up idle connections aggressively
+    idleTimeout: 15000,          // Drop idle sockets after 15s before TiDB kills them
+    queueLimit: 0,
+    connectTimeout: 30000,       // Connection handshake timeout
+    enableKeepAlive: true,       // Force TCP Keep-Alive
+    keepAliveInitialDelay: 0
 };
 
 const db = mysql.createPool(dbConfig);
 
-db.getConnection((err, connection) => {
+// Test initial connection on start without leaving checked-out sockets
+db.query("SELECT 1", (err) => {
     if (err) {
-        console.error("❌ Database connection failed:", err.message);
+        console.error("❌ Initial Database connection failed:", err.message);
     } else {
         console.log(`✅ Connected to MySQL Database [${dbConfig.database}] on ${dbConfig.host}:${dbConfig.port}`);
-        connection.release();
     }
 });
 
@@ -327,7 +331,7 @@ app.get("/bible-studies", (req, res) => {
     });
 });
 
-// Hybrid download route handling both Cloudinary URLs and Legacy local disk files
+// Primary Download Route
 app.get("/bible-studies/download/:id", async (req, res) => {
     const id = req.params.id;
 
@@ -382,22 +386,48 @@ app.get("/bible-studies/download/:id", async (req, res) => {
     });
 });
 
-app.post("/bible-studies", upload.single("document"), (req, res) => {
-    const { title, description } = req.body;
+// ALIAS ROUTE: Directs /download/:id to /bible-studies/download/:id
+app.get("/download/:id", (req, res) => {
+    res.redirect(`/bible-studies/download/${req.params.id}`);
+});
 
-    if (!req.file) {
-        return res.status(400).json({ message: "Please select document" });
-    }
-
-    const fileName = req.file.originalname;
-    const filePath = req.file.path; // Multer-storage-cloudinary attaches the full HTTPS Cloudinary URL here
-
-    db.query("INSERT INTO bible_studies (title, description, fileName, filePath) VALUES (?, ?, ?, ?)", [title, description, fileName, filePath], (err) => {
+// ROBUST POST ROUTE WITH EXPLICIT CLOUDINARY LOGGING
+app.post("/bible-studies", (req, res) => {
+    upload.single("document")(req, res, (err) => {
         if (err) {
-            console.error("Upload DB Error:", err);
-            return res.status(500).json({ message: "Upload failed" });
+            console.error("❌ Cloudinary / Multer Error:", err);
+            return res.status(500).json({ message: "Cloudinary upload failed", error: err.message });
         }
-        res.json({ message: "Bible study uploaded successfully to cloud" });
+
+        const { title, description } = req.body;
+
+        if (!req.file) {
+            console.warn("⚠️ Upload attempted without selecting a document.");
+            return res.status(400).json({ message: "Please select document" });
+        }
+
+        const fileName = req.file.originalname;
+        const filePath = req.file.path; // Cloudinary URL
+
+        console.log("☁️ File uploaded to Cloudinary URL:", filePath);
+
+        db.query(
+            "INSERT INTO bible_studies (title, description, fileName, filePath) VALUES (?, ?, ?, ?)",
+            [title, description || "", fileName, filePath],
+            (dbErr, result) => {
+                if (dbErr) {
+                    console.error("❌ MySQL Insert Error:", dbErr);
+                    return res.status(500).json({ message: "Database insert failed" });
+                }
+
+                console.log(`✅ Saved into Database with ID #${result.insertId}`);
+                res.json({
+                    message: "Bible study uploaded successfully to cloud",
+                    id: result.insertId,
+                    filePath: filePath
+                });
+            }
+        );
     });
 });
 
